@@ -1,0 +1,33 @@
+CXX = clang++
+CXXFLAGS = -std=c++11 -I.
+
+# Object files
+OBJ = main.o catan.o player.o board.o
+TEST_OBJ = test.o catan.o player.o board.o
+
+# Targets
+all: game test
+
+game: $(OBJ)
+	$(CXX) $(CXXFLAGS) -o game $(OBJ)
+
+test: $(TEST_OBJ)
+	$(CXX) $(CXXFLAGS) -o test $(TEST_OBJ)
+
+main.o: main.cpp catan.hpp player.hpp board.hpp
+	$(CXX) $(CXXFLAGS) -c main.cpp
+
+catan.o: catan.cpp catan.hpp
+	$(CXX) $(CXXFLAGS) -c catan.cpp
+
+player.o: player.cpp player.hpp
+	$(CXX) $(CXXFLAGS) -c player.cpp
+
+board.o: board.cpp board.hpp
+	$(CXX) $(CXXFLAGS) -c board.cpp
+
+test.o: test.cpp catan.hpp player.hpp board.hpp
+	$(CXX) $(CXXFLAGS) -c test.cpp
+
+clean:
+	rm -f *.o game test
