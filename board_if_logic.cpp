@@ -49,14 +49,20 @@ void Board::initializeBoard() {
     settlements.push_back(Settlement(hexes[0], hexes[1]));
     settlements.push_back(Settlement(hexes[1], hexes[2]));
 
+    settlements.push_back(Settlement(hexes[0], hexes[1], hexes[4]));
+    settlements.push_back(Settlement(hexes[1], hexes[2], hexes[5]));
 
-    settlements.push_back(Settlement(hexes[0], hexes[3]));
 
+    settlements.push_back(Settlement(hexes[3], hexes[0]));
     settlements.push_back(Settlement(hexes[0], hexes[3], hexes[4]));
     settlements.push_back(Settlement(hexes[1], hexes[4], hexes[5]));
     settlements.push_back(Settlement(hexes[2], hexes[5], hexes[6]));
-
     settlements.push_back(Settlement(hexes[2], hexes[6]));
+
+
+    settlements.push_back(Settlement(hexes[3], hexes[4], hexes[8]));
+    settlements.push_back(Settlement(hexes[4], hexes[5], hexes[9]));
+    settlements.push_back(Settlement(hexes[5], hexes[6], hexes[10]));
 
 
     settlements.push_back(Settlement(hexes[3], hexes[7]));
@@ -69,14 +75,19 @@ void Board::initializeBoard() {
     settlements.push_back(Settlement(hexes[6], hexes[11]));
 
 
-    settlements.push_back(Settlement(hexes[12], hexes[7]));
+    settlements.push_back(Settlement(hexes[7], hexes[12]));
 
-    settlements.push_back(Settlement(hexes[12], hexes[7], hexes[8]));
-    settlements.push_back(Settlement(hexes[13], hexes[8], hexes[9]));
-    settlements.push_back(Settlement(hexes[14],hexes[9], hexes[10]));
-    settlements.push_back(Settlement(hexes[15],hexes[10], hexes[11]));
+    settlements.push_back(Settlement(hexes[7], hexes[8],hexes[12]));
+    settlements.push_back(Settlement(hexes[8], hexes[9], hexes[13]));
+    settlements.push_back(Settlement(hexes[9], hexes[10], hexes[14]));
+    settlements.push_back(Settlement(hexes[10], hexes[11],hexes[15]));
 
-    settlements.push_back(Settlement(hexes[15], hexes[11]));
+    settlements.push_back(Settlement(hexes[11], hexes[15]));
+
+
+    settlements.push_back(Settlement(hexes[12], hexes[13], hexes[8]));
+    settlements.push_back(Settlement(hexes[13], hexes[14], hexes[9]));
+    settlements.push_back(Settlement(hexes[14], hexes[15], hexes[10]));
 
 
     settlements.push_back(Settlement(hexes[16], hexes[12]));
@@ -87,10 +98,39 @@ void Board::initializeBoard() {
 
     settlements.push_back(Settlement(hexes[18], hexes[15]));
 
+    settlements.push_back(Settlement(hexes[16],hexes[17], hexes[13]));
+    settlements.push_back(Settlement(hexes[17], hexes[18], hexes[14]));
+
 
     settlements.push_back(Settlement(hexes[16], hexes[17]));
     settlements.push_back(Settlement(hexes[17], hexes[18]));
 
+}
+
+void Board::initializeEdges() {
+    edges.clear();
+
+    for (size_t i = 0; i < settlements.size(); ++i) {
+        for (size_t j = i + 1; j < settlements.size(); ++j) {
+            // Check if settlements share exactly one hex and are adjacent
+            int sharedHexes = 0;
+            
+            if (settlements[i].hex1 == settlements[j].hex1 || settlements[i].hex1 == settlements[j].hex2 || settlements[i].hex1 == settlements[j].hex3) {
+                sharedHexes++;
+            }
+            if (settlements[i].hex2 == settlements[j].hex1 || settlements[i].hex2 == settlements[j].hex2 || settlements[i].hex2 == settlements[j].hex3) {
+                sharedHexes++;
+            }
+            if (settlements[i].hex3 == settlements[j].hex1 || settlements[i].hex3 == settlements[j].hex2 || settlements[i].hex3 == settlements[j].hex3) {
+                sharedHexes++;
+            }
+
+            // If exactly one shared hex, create an edge
+            if (sharedHexes == 1) {
+                edges.emplace_back(&settlements[i], &settlements[j]);
+            }
+        }
+    }
 }
 
 void Board::printBoard() {
