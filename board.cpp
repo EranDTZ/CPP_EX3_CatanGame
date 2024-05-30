@@ -39,7 +39,6 @@ void Board::initializeBoard() {
     for (const auto& type : resourceTypes) {
         if (type == "Desert") {
             hexes.emplace_back(type, 7);  // Desert has no number
-            resourceNumbers.pop_back();
         } else {
             hexes.emplace_back(type, resourceNumbers.back());
             resourceNumbers.pop_back();
@@ -66,50 +65,50 @@ void Board::printBoard() {
 
     // Map resource types to ANSI color codes
     std::map<std::string, std::string> colorMap = {
-        {"Forest", "\033[0;32m⬢\033[0m"},        // Green hexagon
-        {"Hills", "\033[38;5;208m⬢\033[0m"}, // Orange hexagon
-        {"Pasture", "\033[37m⬢\033[0m"},  // White hexagon
-        {"Fields", "\033[33m⬢\033[0m"},         // Yellow hexagon
-        {"Mountains", "\033[90m⬢\033[0m"},     // Gray hexagon
-        {"Desert", "\033[31m⬢\033[0m"},        // Red hexagon
-        {"default", "\033[0m⬢\033[0m"}         // Default hexagon
+        {"Forest", "\033[0;32m⬢ \033[0m"},        // Green hexagon
+        {"Hills", "\033[38;5;208m⬢ \033[0m"}, // Orange hexagon
+        {"Pasture", "\033[37m⬢ \033[0m"},  // White hexagon
+        {"Fields", "\033[33m⬢ \033[0m"},         // Yellow hexagon
+        {"Mountains", "\033[90m⬢ \033[0m"},     // Gray hexagon
+        {"Desert", "\033[31m⬢ \033[0m"},        // Red hexagon
+        {"default", "\033[0m⬢ \033[0m"}         // Default hexagon
     };
 
-    // Create a vector of pairs to store resource type and number
-    std::vector<std::pair<std::string, int>> hexes;
-    for (const auto& settlement : settlements) {
-        hexes.push_back(settlement.first);
-    }
+    // // Create a vector of pairs to store resource type and number
+    // std::vector<std::pair<std::string, int>> hexes;
+    // for (const auto& settlement : settlements) {
+    //     hexes.push_back(settlement.first);
+    // }
 
     // Print the board with colored dots
     std::cout << "Board Layout:" << std::endl;
-    std::cout << "     " << colorMap[hexes[0].first] << hexes[0].second
-              << "----" << colorMap[hexes[1].first] << hexes[1].second
-              << "----" << colorMap[hexes[2].first] << hexes[2].second << std::endl;
-    std::cout << "     / \\   / \\   / \\" << std::endl;
-    std::cout << "    /   \\ /   \\ /   \\" << std::endl;
-    std::cout << "  " << colorMap[hexes[3].first] << hexes[3].second
-              << "----" << colorMap[hexes[4].first] << hexes[4].second
-              << "----" << colorMap[hexes[5].first] << hexes[5].second
-              << "----" << colorMap[hexes[6].first] << hexes[6].second << std::endl;
-    std::cout << "  / \\   / \\   / \\   / \\" << std::endl;
-    std::cout << " /   \\ /   \\ /   \\ /   \\" << std::endl;
+    std::cout << "       " << colorMap[hexes[0].first] << hexes[0].second
+              << "---" << colorMap[hexes[1].first] << hexes[1].second
+              << "---" << colorMap[hexes[2].first] << hexes[2].second << std::endl;
+    std::cout << "       / \\   / \\   / \\" << std::endl;
+    std::cout << "      /   \\ /   \\ /   \\" << std::endl;
+    std::cout << "    " << colorMap[hexes[3].first] << hexes[3].second
+              << "---" << colorMap[hexes[4].first] << hexes[4].second
+              << "---" << colorMap[hexes[5].first] << hexes[5].second
+              << "---" << colorMap[hexes[6].first] << hexes[6].second << std::endl;
+    std::cout << "    / \\   / \\   / \\   / \\" << std::endl;
+    std::cout << "   /   \\ /   \\ /   \\ /   \\" << std::endl;
     std::cout << colorMap[hexes[7].first] << hexes[7].second
               << "---" << colorMap[hexes[8].first] << hexes[8].second
-              << "----" << colorMap[hexes[9].first] << hexes[9].second
-              << "----" << colorMap[hexes[10].first] << hexes[10].second
-              << "----" << colorMap[hexes[11].first] << hexes[11].second << std::endl;
-    std::cout << " \\   / \\   / \\   / \\   /" << std::endl;
-    std::cout << "  \\ /   \\ /   \\ /   \\ /" << std::endl;
-    std::cout << "  " << colorMap[hexes[12].first] << hexes[12].second
-              << "----" << colorMap[hexes[13].first] << hexes[13].second
-              << "----" << colorMap[hexes[14].first] << hexes[14].second
-              << "----" << colorMap[hexes[15].first] << hexes[15].second << std::endl;
-    std::cout << "   \\    / \\   / \\   /" << std::endl;
-    std::cout << "    \\  /   \\ /   \\ /" << std::endl;
-    std::cout << "     " << colorMap[hexes[16].first] << hexes[16].second
-              << "----" << colorMap[hexes[17].first] << hexes[17].second
-              << "----" << colorMap[hexes[18].first] << hexes[18].second << std::endl;
+              << "---" << colorMap[hexes[9].first] << hexes[9].second
+              << "---" << colorMap[hexes[10].first] << hexes[10].second
+              << "---" << colorMap[hexes[11].first] << hexes[11].second << std::endl;
+    std::cout << "   \\   / \\   / \\   / \\   /" << std::endl;
+    std::cout << "    \\ /   \\ /   \\ /   \\ /" << std::endl;
+    std::cout << "    " << colorMap[hexes[12].first] << hexes[12].second
+              << "---" << colorMap[hexes[13].first] << hexes[13].second
+              << "---" << colorMap[hexes[14].first] << hexes[14].second
+              << "---" << colorMap[hexes[15].first] << hexes[15].second << std::endl;
+    std::cout << "     \\    / \\   / \\   /" << std::endl;
+    std::cout << "      \\  /   \\ /   \\ /" << std::endl;
+    std::cout << "       " << colorMap[hexes[16].first] << hexes[16].second
+              << "---" << colorMap[hexes[17].first] << hexes[17].second
+              << "---" << colorMap[hexes[18].first] << hexes[18].second << std::endl;
 }
 
 
