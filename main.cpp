@@ -14,5 +14,7 @@ int main() {
     Board& board = catan.getBoard();
 
     board.printBoard();
+    board.BoardGuide();
+    board.ResourceGuide();
     return 0;
 }

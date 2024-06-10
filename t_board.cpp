@@ -3,7 +3,7 @@
 #include <map>
 #include <algorithm>
 #include <random>
-#include "board_if_logic.hpp"
+#include "board.hpp"
 
 Board::Board() {
     initializeBoard();
@@ -45,91 +45,9 @@ void Board::initializeBoard() {
         }
     }
 
-    // Initialize settlements (example layout)
-    settlements.push_back(Settlement(hexes[0], hexes[1]));
-    settlements.push_back(Settlement(hexes[1], hexes[2]));
-
-    settlements.push_back(Settlement(hexes[0], hexes[1], hexes[4]));
-    settlements.push_back(Settlement(hexes[1], hexes[2], hexes[5]));
-
-
-    settlements.push_back(Settlement(hexes[3], hexes[0]));
-    settlements.push_back(Settlement(hexes[0], hexes[3], hexes[4]));
-    settlements.push_back(Settlement(hexes[1], hexes[4], hexes[5]));
-    settlements.push_back(Settlement(hexes[2], hexes[5], hexes[6]));
-    settlements.push_back(Settlement(hexes[2], hexes[6]));
-
-
-    settlements.push_back(Settlement(hexes[3], hexes[4], hexes[8]));
-    settlements.push_back(Settlement(hexes[4], hexes[5], hexes[9]));
-    settlements.push_back(Settlement(hexes[5], hexes[6], hexes[10]));
-
-
-    settlements.push_back(Settlement(hexes[3], hexes[7]));
-
-    settlements.push_back(Settlement(hexes[3], hexes[7], hexes[8]));
-    settlements.push_back(Settlement(hexes[4], hexes[8], hexes[9]));
-    settlements.push_back(Settlement(hexes[5], hexes[9], hexes[10]));
-    settlements.push_back(Settlement(hexes[6], hexes[10], hexes[11]));
-
-    settlements.push_back(Settlement(hexes[6], hexes[11]));
-
-
-    settlements.push_back(Settlement(hexes[7], hexes[12]));
-
-    settlements.push_back(Settlement(hexes[7], hexes[8],hexes[12]));
-    settlements.push_back(Settlement(hexes[8], hexes[9], hexes[13]));
-    settlements.push_back(Settlement(hexes[9], hexes[10], hexes[14]));
-    settlements.push_back(Settlement(hexes[10], hexes[11],hexes[15]));
-
-    settlements.push_back(Settlement(hexes[11], hexes[15]));
-
-
-    settlements.push_back(Settlement(hexes[12], hexes[13], hexes[8]));
-    settlements.push_back(Settlement(hexes[13], hexes[14], hexes[9]));
-    settlements.push_back(Settlement(hexes[14], hexes[15], hexes[10]));
-
-
-    settlements.push_back(Settlement(hexes[16], hexes[12]));
-    
-    settlements.push_back(Settlement(hexes[16],hexes[12], hexes[13]));
-    settlements.push_back(Settlement(hexes[17], hexes[13], hexes[14]));
-    settlements.push_back(Settlement(hexes[18], hexes[14], hexes[15]));
-
-    settlements.push_back(Settlement(hexes[18], hexes[15]));
-
-    settlements.push_back(Settlement(hexes[16],hexes[17], hexes[13]));
-    settlements.push_back(Settlement(hexes[17], hexes[18], hexes[14]));
-
-
-    settlements.push_back(Settlement(hexes[16], hexes[17]));
-    settlements.push_back(Settlement(hexes[17], hexes[18]));
-
-}
-
-void Board::initializeEdges() {
-    edges.clear();
-
-    for (size_t i = 0; i < settlements.size(); ++i) {
-        for (size_t j = i + 1; j < settlements.size(); ++j) {
-            // Check if settlements share exactly one hex and are adjacent
-            int sharedHexes = 0;
-            
-            if (settlements[i].hex1 == settlements[j].hex1 || settlements[i].hex1 == settlements[j].hex2 || settlements[i].hex1 == settlements[j].hex3) {
-                sharedHexes++;
-            }
-            if (settlements[i].hex2 == settlements[j].hex1 || settlements[i].hex2 == settlements[j].hex2 || settlements[i].hex2 == settlements[j].hex3) {
-                sharedHexes++;
-            }
-            if (settlements[i].hex3 == settlements[j].hex1 || settlements[i].hex3 == settlements[j].hex2 || settlements[i].hex3 == settlements[j].hex3) {
-                sharedHexes++;
-            }
-
-            // If exactly one shared hex, create an edge
-            if (sharedHexes == 1) {
-                edges.emplace_back(&settlements[i], &settlements[j]);
-            }
-        }
+    // Map hexes to the board with initial availability
+    for (const auto& hex : hexes) {
+        settlements[hex] = false;
     }
 }
 
@@ -194,42 +112,12 @@ void Board::printBoard() {
 }
 
 
-
 bool Board::isPlaceAvailable(const std::vector<std::string>& places, const std::vector<int>& placesNum) const {
-    if (places.size() != 3 || places.size() != 3)
-    {
-        return false;
-    }
-    for (const auto& settlement : settlements) {
-        if (places.size() == 3)
-        {
-            if ((settlement.hex1.first == places[0] && settlement.hex1.second == placesNum[0]) &&
-                (settlement.hex2.first == places[1] && settlement.hex2.second == placesNum[1]) &&
-                (settlement.hex3.first == places[2] && settlement.hex3.second == placesNum[2])) {
-                if (settlement.occupied) {
-                    return false;
-                }
-            }
-        }
-        if (places.size() == 2)
-        {
-            if ((settlement.hex1.first == places[0] && settlement.hex1.second == placesNum[0]) &&
-                (settlement.hex2.first == places[1] && settlement.hex2.second == placesNum[1])) {
-                if (settlement.occupied) {
-                    return false;
-                }
-            }
+    for (size_t i = 0; i < places.size(); ++i) {
+        auto it = settlements.find({places[i], placesNum[i]});
+        if (it != settlements.end() && it->second) {
+            return false; // If any place is already occupied, return false
         }
     }
     return true;
-}
-
-void Board::occupyPlace(const std::vector<std::string>& places, const std::vector<int>& placesNum) {
-    for (auto& settlement : settlements) {
-        if ((settlement.hex1.first == places[0] && settlement.hex1.second == placesNum[0]) ||
-            (settlement.hex2.first == places[1] && settlement.hex2.second == placesNum[1]) ||
-            (settlement.hex3.first == places[2] && settlement.hex3.second == placesNum[2])) {
-            settlement.occupied = true;
-        }
-    }
 }

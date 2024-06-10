@@ -17,25 +17,25 @@ Player::Player(const std::string& name) : name(name), points(0), isTurn(false) ,
     }
 
 
-    void Player::placeFirstSettelemnt(const std::vector<std::string>& places, const std::vector<int>& placesNum, Board& board) {
-        // Logic to place a settlement
-        if (board.isPlaceAvailable(places,placesNum))
-        {
-            cout << name << " placed a settlement at ";
-            for (const auto& place : places) {
-                cout << place << " ";
-                /*Here i need to placeFirstRoad but to where? and hoe do i keep track?*/
-            }
-            cout << endl;
-            points ++; // Assuming each settlement gives 1 point
-            cards.push_back(places[1]);//isert a card of the second resourceTypes
-        }
-        else
-        {
-            std::cout << "place is already occupied" << endl;
-            std::cout << "choose another places and placesNum for your settlements";
-        }
-    }
+    // void Player::placeFirstSettelemnt(const std::vector<std::string>& places, const std::vector<int>& placesNum, Board& board) {
+    //     // Logic to place a settlement
+    //     if (board.isPlaceAvailable(places,placesNum))
+    //     {
+    //         cout << name << " placed a settlement at ";
+    //         for (const auto& place : places) {
+    //             cout << place << " ";
+    //             /*Here i need to placeFirstRoad but to where? and hoe do i keep track?*/
+    //         }
+    //         cout << endl;
+    //         points ++; // Assuming each settlement gives 1 point
+    //         cards.push_back(places[1]);//isert a card of the second resourceTypes
+    //     }
+    //     else
+    //     {
+    //         std::cout << "place is already occupied" << endl;
+    //         std::cout << "choose another places and placesNum for your settlements";
+    //     }
+    // }
 
     void Player::placeFirstRoad(const std::vector<std::string>& places, const std::vector<int>& placesNum, Board& board) {
         // Logic to place a road
@@ -140,21 +140,62 @@ Player::Player(const std::string& name) : name(name), points(0), isTurn(false) ,
     }
 
     void Player::placeSettelemnt(Board& board){
-        if (buySettelemntCard())
+        if (points == 0 || buySettelemntCard())
         {
-            std::string place;
-            int number;
-            std::cout << name << ", choose a place type for your settlement: ";
-            std::cin >> place;
-            std::cout << "Choose a number for your settlement: ";
-            std::cin >> number;
-
-            auto key = std::make_pair(place, number);
-            if (board.settlements[key]) {
+            bool available = false;
+            std::pair<std::string, int> hex1;
+            std::pair<std::string, int> hex2;
+            std::pair<std::string, int> hex3;
+            std::string type = "NULL";
+            int resources = 0;
+            int number = 0;
+            std::cout << "A settlement is an intersection of 2 OR 3 resources! Choose Wisely\n";
+            std::cout << "insert the number of resources in your settlement: \n";
+            std::cin >> resources;
+            std::cout << name << ", choose a place for your settlement by inserting the resources types & Numbers: ";
+            for (int i = 0; i < 3; i++)
+            {
+                std::cout << "resource " << i << " type: "<< std::endl;
+                std::cin >> type;
+                std::cout << "resource " << i << " number: "<< std::endl;
+                std::cin >> number;
+                if (i == 0)
+                {
+                    hex1.first = type;
+                    hex1.second = number;
+                }
+                if (i == 1)
+                {
+                    hex2.first = type;
+                    hex2.second = number;
+                }
+                if (i == 2)
+                {
+                    hex3.first = type;
+                    hex3.second = number;
+                }
+                if (resources == 2 && i == 1)
+                {
+                    break;
+                }
+            }
+            
+            if (resources == 2)
+            {
+                available = board.is2PlaceAvailable(hex1,hex2,name);
+            }
+            else{
+                available = board.is3PlaceAvailable(hex1,hex2,hex3,name);
+            }
+            if (!available) {
+                cards.push_back("Forest");
+                cards.push_back("Hills");
+                cards.push_back("Pasture Land");
+                cards.push_back("Agricultural Land");
                 throw std::runtime_error("Place already occupied.");
             }
-            board.settlements[key] = true;
             points++;
+            return;
         }
         else std::cout << "You don't have all tha resourceTypes in your cards" << endl;
     }
