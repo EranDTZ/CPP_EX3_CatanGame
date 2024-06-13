@@ -23,10 +23,11 @@ class Player {
         void placeSettelemnt(Board& board);
     private:
         std::string name;
-        // std::string id;
         int points;
         bool isTurn;
         std::vector<std::string> cards;
+        std::vector<Settlement> playerSettlements;
+        std::vector<Edge> playerEdges;
     };
 
 #endif

@@ -66,10 +66,10 @@ Player::Player(const std::string& name) : name(name), points(0), isTurn(false) ,
         cout << name << " ended their turn." << endl;
     }
 
-    // void Player::trade(Player& other, const std::string& give, const std::string& receive, int giveAmount, int receiveAmount) {
-    //     // Logic to trade resources
-    //     cout << name << " trades " << giveAmount << " " << give << " for " << receiveAmount << " " << receive << " with " << other.getName() << endl;
-    // }
+    void Player::trade(Player& other, const std::string& give, const std::string& receive, int giveAmount, int receiveAmount) {
+        // Logic to trade resources
+        cout << name << " trades " << giveAmount << " " << give << " for " << receiveAmount << " " << receive << " with " << other.getName() << endl;
+    }
 
     void Player::buyDevelopmentCard() {
         bool allCardsFound = true;
@@ -140,15 +140,16 @@ Player::Player(const std::string& name) : name(name), points(0), isTurn(false) ,
     }
 
     void Player::placeSettelemnt(Board& board){
+        const Settlement* u;
         if (points == 0 || buySettelemntCard())
         {
-            bool available = false;
             std::pair<std::string, int> hex1;
             std::pair<std::string, int> hex2;
             std::pair<std::string, int> hex3;
             std::string type = "NULL";
             int resources = 0;
             int number = 0;
+            
             std::cout << "A settlement is an intersection of 2 OR 3 resources! Choose Wisely\n";
             std::cout << "insert the number of resources in your settlement: \n";
             std::cin >> resources;
@@ -182,17 +183,32 @@ Player::Player(const std::string& name) : name(name), points(0), isTurn(false) ,
             
             if (resources == 2)
             {
-                available = board.is2PlaceAvailable(hex1,hex2,name);
+                u = board.is2PlaceAvailable(hex1,hex2,name);
+                if (u != nullptr) {
+                    playerSettlements.push_back(*u);
+                }
+                else
+                {
+                    cards.push_back("Forest");
+                    cards.push_back("Hills");
+                    cards.push_back("Pasture Land");
+                    cards.push_back("Agricultural Land");
+                    throw std::runtime_error("Place already occupied.");
+                } 
             }
             else{
-                available = board.is3PlaceAvailable(hex1,hex2,hex3,name);
-            }
-            if (!available) {
-                cards.push_back("Forest");
-                cards.push_back("Hills");
-                cards.push_back("Pasture Land");
-                cards.push_back("Agricultural Land");
-                throw std::runtime_error("Place already occupied.");
+                u = board.is3PlaceAvailable(hex1,hex2,hex3,name);
+                if (u != nullptr) {
+                    playerSettlements.push_back(*u);
+                }
+                else
+                {
+                    cards.push_back("Forest");
+                    cards.push_back("Hills");
+                    cards.push_back("Pasture Land");
+                    cards.push_back("Agricultural Land");
+                    throw std::runtime_error("Place already occupied.");
+                } 
             }
             points++;
             return;
