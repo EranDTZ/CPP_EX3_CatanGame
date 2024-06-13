@@ -46,65 +46,66 @@ void Board::initializeBoard() {
         }
     }
 
+    settlements.clear();
     // Initialize settlements (example layout)
     settlements.push_back(Settlement(hexes[0], hexes[1],1));
     settlements.push_back(Settlement(hexes[1], hexes[2],2));
 
-    settlements.push_back(Settlement(hexes[0], hexes[1], hexes[4],3));
-    settlements.push_back(Settlement(hexes[1], hexes[2], hexes[5],4));
+    settlements.push_back(Settlement(hexes[0], hexes[3],3));
+
+    settlements.push_back(Settlement(hexes[0], hexes[1], hexes[4],4));
+    settlements.push_back(Settlement(hexes[1], hexes[2], hexes[5],5));
+
+    settlements.push_back(Settlement(hexes[2], hexes[6],6));
 
 
-    settlements.push_back(Settlement(hexes[3], hexes[0],5));
-    settlements.push_back(Settlement(hexes[0], hexes[3], hexes[4],5));
-    settlements.push_back(Settlement(hexes[1], hexes[4], hexes[5],6));
-    settlements.push_back(Settlement(hexes[2], hexes[5], hexes[6],7));
-    settlements.push_back(Settlement(hexes[2], hexes[6],8));
+    settlements.push_back(Settlement(hexes[0], hexes[3], hexes[4],7));
+    settlements.push_back(Settlement(hexes[1], hexes[4], hexes[5],8));
+    settlements.push_back(Settlement(hexes[2], hexes[5], hexes[6],9));
+
+    settlements.push_back(Settlement(hexes[3], hexes[7],10));
 
 
-    settlements.push_back(Settlement(hexes[3], hexes[4], hexes[8],9));
-    settlements.push_back(Settlement(hexes[4], hexes[5], hexes[9],10));
-    settlements.push_back(Settlement(hexes[5], hexes[6], hexes[10],11));
+    settlements.push_back(Settlement(hexes[3], hexes[4], hexes[8],11));
+    settlements.push_back(Settlement(hexes[4], hexes[5], hexes[9],12));
+    settlements.push_back(Settlement(hexes[5], hexes[6], hexes[10],13));
+
+    settlements.push_back(Settlement(hexes[6], hexes[11],14));
+
+    settlements.push_back(Settlement(hexes[3], hexes[7], hexes[8],15));
+    settlements.push_back(Settlement(hexes[4], hexes[8], hexes[9],16));
+    settlements.push_back(Settlement(hexes[5], hexes[9], hexes[10],17));
+    settlements.push_back(Settlement(hexes[6], hexes[10], hexes[11],18));
 
 
-    settlements.push_back(Settlement(hexes[3], hexes[7],12));
-
-    settlements.push_back(Settlement(hexes[3], hexes[7], hexes[8],13));
-    settlements.push_back(Settlement(hexes[4], hexes[8], hexes[9],14));
-    settlements.push_back(Settlement(hexes[5], hexes[9], hexes[10],15));
-    settlements.push_back(Settlement(hexes[6], hexes[10], hexes[11],16));
-
-    settlements.push_back(Settlement(hexes[6], hexes[11],17));
-
-
-    settlements.push_back(Settlement(hexes[7], hexes[12],18));
+    // settlements.push_back(Settlement(hexes[7], hexes[12],18));
 
     settlements.push_back(Settlement(hexes[7], hexes[8],hexes[12],19));
     settlements.push_back(Settlement(hexes[8], hexes[9], hexes[13],20));
     settlements.push_back(Settlement(hexes[9], hexes[10], hexes[14],21));
     settlements.push_back(Settlement(hexes[10], hexes[11],hexes[15],22));
 
-    settlements.push_back(Settlement(hexes[11], hexes[15],23));
-
+    settlements.push_back(Settlement(hexes[7], hexes[12],23));
 
     settlements.push_back(Settlement(hexes[12], hexes[13], hexes[8],24));
     settlements.push_back(Settlement(hexes[13], hexes[14], hexes[9],25));
     settlements.push_back(Settlement(hexes[14], hexes[15], hexes[10],26));
 
-
-    settlements.push_back(Settlement(hexes[16], hexes[12],27));
+    settlements.push_back(Settlement(hexes[11], hexes[15],27));
     
     settlements.push_back(Settlement(hexes[16],hexes[12], hexes[13],28));
     settlements.push_back(Settlement(hexes[17], hexes[13], hexes[14],29));
     settlements.push_back(Settlement(hexes[18], hexes[14], hexes[15],30));
 
-    settlements.push_back(Settlement(hexes[18], hexes[15],31));
+    settlements.push_back(Settlement(hexes[12], hexes[16],31));
 
     settlements.push_back(Settlement(hexes[16],hexes[17], hexes[13],32));
     settlements.push_back(Settlement(hexes[17], hexes[18], hexes[14],33));
 
+    settlements.push_back(Settlement(hexes[15], hexes[18],34));
 
-    settlements.push_back(Settlement(hexes[16], hexes[17],34));
-    settlements.push_back(Settlement(hexes[17], hexes[18],35));
+    settlements.push_back(Settlement(hexes[16], hexes[17],35));
+    settlements.push_back(Settlement(hexes[17], hexes[18],36));
 
 }
 
@@ -382,6 +383,60 @@ const Edge* Board::findEdgeByUV(const Settlement* u, const Settlement* v, std::s
         }
     }
     return nullptr;
+}
+
+void Board::printSometing() { 
+    // Map resource types to ANSI color codes
+    std::map<std::string, std::string> colorMap = {
+        {"Forest", "\033[0;32m⬢ \033[0m"},        // Green hexagon
+        {"Hills", "\033[38;5;208m⬢ \033[0m"}, // Orange hexagon
+        {"Pasture", "\033[37m⬢ \033[0m"},  // White hexagon
+        {"Fields", "\033[33m⬢ \033[0m"},         // Yellow hexagon
+        {"Mountains", "\033[90m⬢ \033[0m"},     // Gray hexagon
+        {"Desert", "\033[31m⬢ \033[0m"},        // Red hexagon
+        {"default", "\033[0m⬢ \033[0m"}         // Default hexagon
+    };
+
+    // Print the board with colored dots
+    std::cout << "Board Layout:" << std::endl;
+    
+    std::cout << "         / \\ 1 / \\ 2 / \\" << std::endl;
+    std::cout << "        /   \\ /   \\ /   \\" << std::endl;
+
+    std::cout << "       |     |     |     | " << std::endl;
+    
+    std::cout << "       3     4     5     6 " << std::endl;
+
+    std::cout << "      / \\   / \\   / \\   / \\" << std::endl;
+    std::cout << "     /   \\ /   \\ /   \\ /   \\" << std::endl;
+
+    std::cout << "          7     8     9      " << std::endl;
+    std::cout << "    |     |     |     |     |" << std::endl;
+    std::cout << "   10    11    12    13    14" << std::endl;
+
+    std::cout << "   / \\   / \\   / \\   / \\   / \\" << std::endl;
+    std::cout << "  /   \\ /   \\ /   \\ /   \\ /   \\" << std::endl;
+
+    std::cout << "      15    16    17    18      " << std::endl;
+    std::cout << " |     |     |     |     |     |" << std::endl;
+    std::cout << "      19    20    21    22      " << std::endl;
+    
+    std::cout << "  \\   / \\   / \\   / \\   / \\   /" << std::endl;
+    std::cout << "   \\ /   \\ /   \\ /   \\ /   \\ /" << std::endl;
+
+    std::cout << "   23    24    25    26    27" << std::endl;
+    std::cout << "    |     |     |     |     |" << std::endl;
+    std::cout << "         28    29    30      " << std::endl;
+    
+    std::cout << "     \\   / \\   / \\   / \\   /" << std::endl;
+    std::cout << "      \\ /   \\ /   \\ /   \\ /" << std::endl;
+
+    std::cout << "      31    32    33    34" << std::endl;
+    std::cout << "       |     |     |     |" << std::endl;
+    
+    std::cout << "       \\    / \\   / \\   /" << std::endl;
+    std::cout << "        \\  /35 \\ / 36\\ /" << std::endl;
+   
 }
 
 

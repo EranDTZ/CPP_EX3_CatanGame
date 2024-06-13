@@ -17,34 +17,14 @@ Player::Player(const std::string& name) : name(name), points(0), isTurn(false) ,
     }
 
 
-    // void Player::placeFirstSettelemnt(const std::vector<std::string>& places, const std::vector<int>& placesNum, Board& board) {
-    //     // Logic to place a settlement
-    //     if (board.isPlaceAvailable(places,placesNum))
-    //     {
-    //         cout << name << " placed a settlement at ";
-    //         for (const auto& place : places) {
-    //             cout << place << " ";
-    //             /*Here i need to placeFirstRoad but to where? and hoe do i keep track?*/
-    //         }
-    //         cout << endl;
-    //         points ++; // Assuming each settlement gives 1 point
-    //         cards.push_back(places[1]);//isert a card of the second resourceTypes
+    // void Player::placeFirstRoad(const std::vector<std::string>& places, const std::vector<int>& placesNum, Board& board) {
+    //     // Logic to place a road
+    //     cout << name << " placed a road at ";
+    //     for (const auto& place : places) {
+    //         cout << place << " ";
     //     }
-    //     else
-    //     {
-    //         std::cout << "place is already occupied" << endl;
-    //         std::cout << "choose another places and placesNum for your settlements";
-    //     }
+    //     cout << endl;
     // }
-
-    void Player::placeFirstRoad(const std::vector<std::string>& places, const std::vector<int>& placesNum, Board& board) {
-        // Logic to place a road
-        cout << name << " placed a road at ";
-        for (const auto& place : places) {
-            cout << place << " ";
-        }
-        cout << endl;
-    }
 
     void Player::rollDice() {
         if (!isTurn) {
@@ -141,7 +121,7 @@ Player::Player(const std::string& name) : name(name), points(0), isTurn(false) ,
 
     void Player::placeSettelemnt(Board& board){
         const Settlement* u;
-        if (points == 0 || buySettelemntCard())
+        if (points == 0 || points == 1 || buySettelemntCard())
         {
             std::pair<std::string, int> hex1;
             std::pair<std::string, int> hex2;
@@ -214,6 +194,15 @@ Player::Player(const std::string& name) : name(name), points(0), isTurn(false) ,
             return;
         }
         else std::cout << "You don't have all tha resourceTypes in your cards" << endl;
+    }
+
+    void Player::placeFirstRoad(const std::vector<std::string>& places, const std::vector<int>& placesNum, Board& board) {
+        // Logic to place a road
+        cout << name << " placed a road at ";
+        for (const auto& place : places) {
+            cout << place << " ";
+        }
+        cout << endl;
     }
 
     void Player::printPoints() const {

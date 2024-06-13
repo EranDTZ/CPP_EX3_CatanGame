@@ -69,6 +69,7 @@ public:
     void printBoard();
     void ResourceGuide();
     void BoardGuide() const;
+    void printSometing();
     const Settlement* is3PlaceAvailable(const std::pair<std::string, int> hex1, const std::pair<std::string, int> hex2, const std::pair<std::string, int> hex3, std::string& playerId) const;
     const Settlement* is2PlaceAvailable(const std::pair<std::string, int> hex1, const std::pair<std::string, int> hex2, std::string& playerId) const;
     const Settlement* findSettlementById(int settlementId) const;
