@@ -11,7 +11,6 @@ class Player {
         std::string getName() const;
         void placeSettelemnt(const std::vector<std::string>& places, const std::vector<int>& placesNum, Board& board);
         void placeFirstSettelemnt(const std::vector<std::string>& places, const std::vector<int>& placesNum, Board& board);
-        void placeFirstRoad(const std::vector<std::string>& places, const std::vector<int>& placesNum, Board& board);
         void rollDice();
         void endTurn();
         void trade(Player& other, const std::string& give, const std::string& receive, int giveAmount, int receiveAmount);
@@ -21,6 +20,8 @@ class Player {
         bool buySettelemntCard();
         bool buyRoadCard();
         void placeSettelemnt(Board& board);
+        void placeRoad(Board& board, int settlementId);
+        void placeRoad(Board& board);
     private:
         std::string name;
         int points;

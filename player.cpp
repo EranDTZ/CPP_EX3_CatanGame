@@ -53,7 +53,7 @@ Player::Player(const std::string& name) : name(name), points(0), isTurn(false) ,
 
     void Player::buyDevelopmentCard() {
         bool allCardsFound = true;
-        std::vector<std::string> cardsToCheck = {"Forest", "Hills", "Pasture Land", "Agricultural Land"};
+        std::vector<std::string> cardsToCheck = {"Forest", "Hills", "Pasture", "Agricultural"};
 
         for (const auto& card : cardsToCheck) {
             auto iter = std::find(cards.begin(), cards.end(), card);
@@ -79,7 +79,7 @@ Player::Player(const std::string& name) : name(name), points(0), isTurn(false) ,
 
     bool Player::buySettelemntCard() {
         bool allCardsFound = true;
-        std::vector<std::string> cardsToCheck = {"Forest", "Hills", "Pasture Land", "Agricultural Land"};
+        std::vector<std::string> cardsToCheck = {"Forest", "Hills", "Pasture", "Agricultural"};
 
         for (const auto& card : cardsToCheck) {
             auto iter = std::find(cards.begin(), cards.end(), card);
@@ -171,8 +171,8 @@ Player::Player(const std::string& name) : name(name), points(0), isTurn(false) ,
                 {
                     cards.push_back("Forest");
                     cards.push_back("Hills");
-                    cards.push_back("Pasture Land");
-                    cards.push_back("Agricultural Land");
+                    cards.push_back("Pasture");
+                    cards.push_back("Agricultural");
                     throw std::runtime_error("Place already occupied.");
                 } 
             }
@@ -185,10 +185,15 @@ Player::Player(const std::string& name) : name(name), points(0), isTurn(false) ,
                 {
                     cards.push_back("Forest");
                     cards.push_back("Hills");
-                    cards.push_back("Pasture Land");
-                    cards.push_back("Agricultural Land");
+                    cards.push_back("Pasture");
+                    cards.push_back("Agricultural");
                     throw std::runtime_error("Place already occupied.");
                 } 
+            }
+            if (points == 0 || points == 1)
+            {
+                int id = u->settlementId;
+                placeRoad(board,id);
             }
             points++;
             return;
@@ -196,13 +201,58 @@ Player::Player(const std::string& name) : name(name), points(0), isTurn(false) ,
         else std::cout << "You don't have all tha resourceTypes in your cards" << endl;
     }
 
-    void Player::placeFirstRoad(const std::vector<std::string>& places, const std::vector<int>& placesNum, Board& board) {
+    void Player::placeRoad(Board& board, int settlementId) {
+        std::string settlementId1;
+        std::string settlementId2;
+        if (points == 0 || points == 1 || buySettelemntCard()) {
+            
+        }
+
+        //search in playerSettlements and then check if Edge is existed
         // Logic to place a road
         cout << name << " placed a road at ";
-        for (const auto& place : places) {
-            cout << place << " ";
+        for (const auto& place : playerSettlements) {
         }
         cout << endl;
+    }
+
+    void Player::placeRoad(Board& board) {
+        int mySettlementId;
+        int toSettlementId;
+        bool isRoad = false;
+
+        if (points == 0 || points == 1 || buySettelemntCard()) {
+
+            std::cout << "A road is an edge betwin 1 OR 2 settlement! Choose Wisely\n";
+            std::cout << name << ", choose a place for your Road by inserting the settlement ID (from your settlements),\nand the settlement ID that the road leads to : ";
+            for (size_t i = 0; i < 2; i++) {
+                std::cout << "my Settlement ID " << i << ": "<< std::endl;
+                std::cin >> mySettlementId;
+                std::cout << "to Settlement ID " << i << ": "<< std::endl;
+                std::cin >> toSettlementId;
+            }
+            for (const auto& place : playerSettlements) {
+                if (place.settlementId == mySettlementId) {
+                    isRoad = board.isRoadAvailable(&place,toSettlementId,name);
+                    if (isRoad == true)
+                    {
+                        cout << name << " placed a road from settlement " << place.settlementId << " to settlement " << toSettlementId << std::endl;
+                    }
+                    break;
+                }
+                if (isRoad == true)
+                {
+                    break;
+                } 
+            }
+            if (isRoad == false)
+            {
+                std::cout << "Sorry you can`t place a Road here, the Rode is block." << std::endl;
+                cards.push_back("Forest");
+                cards.push_back("Agricultural");
+            }
+            /*?? chack if done  ??*/            
+        }
     }
 
     void Player::printPoints() const {

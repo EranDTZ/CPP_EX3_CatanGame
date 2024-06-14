@@ -74,7 +74,7 @@ public:
     const Settlement* is2PlaceAvailable(const std::pair<std::string, int> hex1, const std::pair<std::string, int> hex2, std::string& playerId) const;
     const Settlement* findSettlementById(int settlementId) const;
     const Settlement* isPlaceAvailable_byID(int settlementId, std::string& playerId) const;
-    const Edge* isRoadAvailable(const Settlement* u, int settlementId, std::string& playerId) const;
+    bool isRoadAvailable(const Settlement* u, int settlementId, std::string& playerId) const;
     const Edge* findEdgeByUV(const Settlement* u, const Settlement* v, std::string& playerId) const;
     void occupyPlace(const std::vector<std::string>& places, const std::vector<int>& placesNum);
 private:

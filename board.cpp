@@ -271,8 +271,7 @@ const Settlement* Board::is2PlaceAvailable(const std::pair<std::string, int> hex
             if (!settlement.occupied) {
                 settlement.setOccupied(true);
                 settlement.setPlayerId(playerId);
-                //SET setOccupied;
-                //SET setplayerId;
+                /*here need to chack if the player have a Road to this settlement.*/
                 return &settlement;
             }
             else {
@@ -347,7 +346,7 @@ const Settlement* Board::isPlaceAvailable_byID(int settlementId, std::string& pl
 //     return nullptr;
 // }
 
-const Edge* Board::isRoadAvailable(const Settlement* u, int settlementId, std::string& playerId) const {
+bool Board::isRoadAvailable(const Settlement* u, int settlementId, std::string& playerId) const {
     const Settlement* v = findSettlementById(settlementId);
     if (u != nullptr && v != nullptr){
         for (const auto& edge : edges) {
@@ -357,21 +356,23 @@ const Edge* Board::isRoadAvailable(const Settlement* u, int settlementId, std::s
                 {
                     edge.setRoads(1);
                     edge.setPlayerId(playerId);
+                    return true;
                 }
                 if (edge.roads == 1 && edge.playerId == playerId)
                 {
                     edge.setRoads(2);
+                    return true;
                 }
                 if (edge.roads == 1 && edge.playerId != playerId && edge.settlement2->playerId != playerId)
                 {
                     edge.setRoads(2);
                     edge.setRoadThief(playerId);
+                    return true;
                 }
-                return &edge;
             }
         }
     }
-    return nullptr;
+    return false;
 }
 
 const Edge* Board::findEdgeByUV(const Settlement* u, const Settlement* v, std::string& playerId) const {
