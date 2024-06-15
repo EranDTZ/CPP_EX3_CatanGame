@@ -13,9 +13,12 @@ int main() {
     catan.ChooseStartingPlayer();
     Board& board = catan.getBoard();
 
-    // board.printBoard();
-    // board.BoardGuide();
-    // board.ResourceGuide();
-    board.printSometing();
+    board.printBoard();
+    board.BoardGuide();
+    board.ResourceGuide();
+    // board.printSometing();
+
+    p1.placeSettelemnt(board);
+    p1.endTurn();
     return 0;
 }

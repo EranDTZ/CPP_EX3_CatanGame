@@ -160,29 +160,23 @@ Player::Player(const std::string& name) : name(name), points(0), isTurn(false) ,
             if (settlementId > 0 && settlementId < 37)
             {
                 v = board.isPlaceAvailable_byID(settlementId,name);
+                // std::cout << v << "\n" << v->occupied << "\n" << settlementId << std::endl;
             }
             else {
                 std::cout << "settlement ID is incorrect!\n";
                 return;
             }
-            if (v != nullptr) {
-                if (points == 0 || points == 1)
-                {
+            if (v != nullptr && board.findEdgeToV(v,name)) {
                     playerSettlements.push_back(*v);
                 }
-                else if (board.findEdgeToV(v,name))
+                else
                 {
-                    playerSettlements.push_back(*v);
-                }
-            }
-            else
-            {
-                cards.push_back("Forest");
-                cards.push_back("Hills");
-                cards.push_back("Pasture");
-                cards.push_back("Fields");
-                throw std::runtime_error("Place already occupied.");
-            } 
+                    cards.push_back("Forest");
+                    cards.push_back("Hills");
+                    cards.push_back("Pasture");
+                    cards.push_back("Fields");
+                    throw std::runtime_error("Place already occupied.");
+                } 
             
             // if (resources == 2)
             // {
@@ -217,7 +211,7 @@ Player::Player(const std::string& name) : name(name), points(0), isTurn(false) ,
             // }
             if (points == 0 || points == 1)
             {
-                int id = v->SettlementId();
+                int id = v->settlementId;
                 placeRoad(board,id);
             }
             points++;
@@ -230,13 +224,14 @@ Player::Player(const std::string& name) : name(name), points(0), isTurn(false) ,
         int toSettlementId;
         bool isRoad = false;
         std::cout << name << ", choose the settlement ID that the road leads to: ";
+        std::cout << "to Settlement ID: "<< std::endl;
         std::cin >> toSettlementId;
-        for (auto& place : playerSettlements) {
-            if (place.SettlementId() == settlementId) {
+        for (const auto& place : playerSettlements) {
+            if (place.settlementId == settlementId) {
                 isRoad = board.isRoadAvailable(&place,toSettlementId,name);
                 if (isRoad == true)
                 {
-                    cout << name << " placed a road from settlement " << place.SettlementId() << " to settlement " << toSettlementId << std::endl;
+                    cout << name << " placed a road from settlement " << place.settlementId << " to settlement " << toSettlementId << std::endl;
                 }
                 break;
             }
@@ -268,11 +263,11 @@ Player::Player(const std::string& name) : name(name), points(0), isTurn(false) ,
                 std::cin >> toSettlementId;
             }
             for (const auto& place : playerSettlements) {
-                if (place.SettlementId() == mySettlementId) {
+                if (place.settlementId == mySettlementId) {
                     isRoad = board.isRoadAvailable(&place,toSettlementId,name);
                     if (isRoad == true)
                     {
-                        cout << name << " placed a road from settlement " << place.SettlementId() << " to settlement " << toSettlementId << std::endl;
+                        cout << name << " placed a road from settlement " << place.settlementId << " to settlement " << toSettlementId << std::endl;
                     }
                     break;
                 }

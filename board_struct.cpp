@@ -8,7 +8,6 @@
 
 Board::Board() {
     initializeBoard();
-    initializeEdges();
 }
 /*maybe it should be realized using a graph , 
 So every Node is a meeting of - 3 resourceTypes OR 2 resourceTypes and NULL,
@@ -118,13 +117,13 @@ void Board::initializeEdges() {
             // Check if settlements share exactly one hex and are adjacent
             int sharedHexes = 0;
             
-            if (settlements[i].Hex1() == settlements[j].Hex1() || settlements[i].Hex1() == settlements[j].Hex2() || settlements[i].Hex1() == settlements[j].Hex3()) {
+            if (settlements[i].hex1 == settlements[j].hex1 || settlements[i].hex1 == settlements[j].hex2 || settlements[i].hex1 == settlements[j].hex3) {
                 sharedHexes++;
             }
-            if (settlements[i].Hex2() == settlements[j].Hex1() || settlements[i].Hex2() == settlements[j].Hex2() || settlements[i].Hex2() == settlements[j].Hex3()) {
+            if (settlements[i].hex2 == settlements[j].hex1 || settlements[i].hex2 == settlements[j].hex2 || settlements[i].hex2 == settlements[j].hex3) {
                 sharedHexes++;
             }
-            if (settlements[i].Hex3() == settlements[j].Hex1() || settlements[i].Hex3() == settlements[j].Hex2() || settlements[i].Hex3() == settlements[j].Hex3()) {
+            if (settlements[i].hex3 == settlements[j].hex1 || settlements[i].hex3 == settlements[j].hex2 || settlements[i].hex3 == settlements[j].hex3) {
                 sharedHexes++;
             }
 
@@ -220,153 +219,154 @@ void Board::BoardGuide() const {
     
 
     for (const auto& settlement : settlements) {
-        std::cout << "settlement " << settlement.SettlementId() << ": <" << colorStringM[settlement.Hex1().first] << "," << settlement.Hex1().second << ">";
-        if (settlement.Hex3().first != "NULL")
+        std::cout << "settlement " << settlement.settlementId << ": <" << colorStringM[settlement.hex1.first] << "," << settlement.hex1.second << ">";
+        if (settlement.hex3.first != "NULL")
         {
-            std::cout << ", " <<  ": <" << colorStringM[settlement.Hex2().first] << "," << settlement.Hex2().second << ">";
-            std::cout << ", " <<  ": <" << colorStringM[settlement.Hex3().first] << "," << settlement.Hex3().second << ">" << std::endl;
+            std::cout << ", " <<  ": <" << colorStringM[settlement.hex2.first] << "," << settlement.hex2.second << ">";
+            std::cout << ", " <<  ": <" << colorStringM[settlement.hex3.first] << "," << settlement.hex3.second << ">" << std::endl;
         }
-        else std::cout << ", " <<  ": <" << colorStringM[settlement.Hex2().first] << "," << settlement.Hex2().second << ">"<< std::endl; 
+        else std::cout << ", " <<  ": <" << colorStringM[settlement.hex2.first] << "," << settlement.hex2.second << ">"<< std::endl; 
     }
    
 }
 
-
-// Settlement* Board::is3PlaceAvailable(const std::pair<std::string, int> hex1, const std::pair<std::string, int> hex2, const std::pair<std::string, int> hex3, std::string& playerId) {
-//     for (auto& settlement : settlements) {
-//         if ((settlement.Hex1().first == hex1.first && settlement.Hex1().second == hex1.second) &&
-//             (settlement.Hex2().first == hex2.first && settlement.Hex2().second == hex2.second) &&
-//             (settlement.Hex3().first == hex3.first && settlement.Hex3().second == hex3.second) ||
-//             (settlement.Hex1().first == Hex2().first && settlement.Hex1().second == Hex2().second) &&
-//             (settlement.Hex2().first == Hex3().first && settlement.Hex2().second == Hex3().second) &&
-//             (settlement.Hex3().first == Hex1().first && settlement.Hex3().second == Hex1().second) ||
-//             (settlement.Hex1().first == Hex3().first && settlement.Hex1().second == Hex3().second) &&
-//             (settlement.Hex2().first == Hex1().first && settlement.Hex2().second == Hex1().second) &&
-//             (settlement.Hex3().first == Hex2().first && settlement.Hex3().second == Hex2().second)) {
-//             if (!settlement.isOccupied()) {
-//                 settlement.setOccupied(true);
-//                 settlement.setPlayerId(playerId);
-//                 //SET setOccupied;
-//                 //SET setplayerId;
-//                 return &settlement;
-//             }
-//             std::cout << "Settlement is occupied by " << settlement.PlayerId() << std::endl;
-//             std::cout << "Select a settlement from the list of unoccupied settlements:" << std::endl;
-//             BoardGuide();
-//             return nullptr;
-//         }
-//     }
-//     std::cout << "There is no such settlement in the board!" << std::endl;
-//     std::cout << "Select a settlement from the list of unoccupied settlements:" << std::endl;
-//     BoardGuide();
-//     return nullptr;
-// }
-
-// Settlement* Board::is2PlaceAvailable(const std::pair<std::string, int> Hex1(), const std::pair<std::string, int> Hex2(), std::string& playerId) {
-//     for (auto& settlement : settlements) {
-//         if ((settlement.Hex1().first == Hex1().first && settlement.Hex1().second == Hex1().second) &&
-//             (settlement.Hex2().first == Hex2().first && settlement.Hex2().second == Hex2().second) &&
-//             (settlement.Hex3().first == "NULL" && settlement.Hex3().second == 0) ||
-//             (settlement.Hex1().first == Hex2().first && settlement.Hex1().second == Hex2().second) &&
-//             (settlement.Hex2().first == Hex1().first && settlement.Hex2().second == Hex1().second) &&
-//             (settlement.Hex3().first == "NULL" && settlement.Hex3().second == 0)) {
-//             if (!settlement.isOccupied()) {
-//                 settlement.setOccupied(true);
-//                 settlement.setPlayerId(playerId);
-//                 /*here need to chack if the player have a Road to this settlement.*/
-//                 return &settlement;
-//             }
-//             else {
-//                 std::cout << "Settlement is occupied by " << settlement.PlayerId << std::endl;
-//                 std::cout << "Select a settlement from the list of unoccupied settlements:" << std::endl;
-//                 BoardGuide();
-//                 return nullptr;
-//             }
-//         }
-//     }
-//     std::cout << "There is no such settlement in the board!" << std::endl;
-//     std::cout << "Select a settlement from the list of unoccupied settlements:" << std::endl;
-//     BoardGuide();
-//     return nullptr;
-// }
-
-
-// const Settlement* Board::isPlaceAvailable_byID(int SettlementId(), std::string& playerId()) const {
-//     const Settlement* settlement = (Settlement*)malloc(sizeof(Settlement));;
-//     settlement = findSettlementById(SettlementId());
-//     if (settlement != nullptr)
-//     {
-//         if (!(*settlement).isOccupied()){
-//                 (*settlement).setOccupied(true);
-//                 std::cout << "\n" << settlement->isOccupied() << " 1\n" << std::endl;
-//                 (*settlement).setPlayerId(playerId());
-//                 std::cout << "\n" << settlement->playerId() << " 2\n" << std::endl;
-//                 return &(*settlement);
-//             }
-//             else {
-//                 std::cout << "Settlement is isOccupied() by " << (*settlement).playerId() << std::endl;
-//                 std::cout << "Select a settlement from the list of unisOccupied() settlements:" << std::endl;
-//                 BoardGuide();
-//                 return nullptr;
-//             }
-//     }
-//     std::cout << "There is no such settlement in the board!" << std::endl;
-//     std::cout << "Select a settlement from the list of unisOccupied() settlements:" << std::endl;
-//     BoardGuide();
-//     return nullptr;
-// }
-
-
-Settlement* Board::isPlaceAvailable_byID(int settlementId, std::string& playerId) {
-    for (auto& settlement : settlements) {
-        if (settlement.SettlementId() == settlementId) {
-            if (!settlement.isOccupied()){
+const Settlement* Board::is3PlaceAvailable(const std::pair<std::string, int> hex1,const std::pair<std::string, int> hex2,const std::pair<std::string, int> hex3, std::string& playerId) const {
+    for (const auto& settlement : settlements) {
+        if ((settlement.hex1.first == hex1.first && settlement.hex1.second == hex1.second) &&
+            (settlement.hex2.first == hex2.first && settlement.hex2.second == hex2.second) &&
+            (settlement.hex3.first == hex3.first && settlement.hex3.second == hex3.second) ||
+            (settlement.hex1.first == hex2.first && settlement.hex1.second == hex2.second) &&
+            (settlement.hex2.first == hex3.first && settlement.hex2.second == hex3.second) &&
+            (settlement.hex3.first == hex1.first && settlement.hex3.second == hex1.second) ||
+            (settlement.hex1.first == hex3.first && settlement.hex1.second == hex3.second) &&
+            (settlement.hex2.first == hex1.first && settlement.hex2.second == hex1.second) &&
+            (settlement.hex3.first == hex2.first && settlement.hex3.second == hex2.second)) {
+            if (!settlement.occupied) {
                 settlement.setOccupied(true);
-                settlement.setPlayerId(playerId);    
+                settlement.setPlayerId(playerId);
+                //SET setOccupied;
+                //SET setplayerId;
+                return &settlement;
+            }
+            std::cout << "Settlement is occupied by " << settlement.playerId << std::endl;
+            std::cout << "Select a settlement from the list of unoccupied settlements:" << std::endl;
+            BoardGuide();
+            return nullptr;
+        }
+    }
+    std::cout << "There is no such settlement in the board!" << std::endl;
+    std::cout << "Select a settlement from the list of unoccupied settlements:" << std::endl;
+    BoardGuide();
+    return nullptr;
+}
+
+const Settlement* Board::is2PlaceAvailable(const std::pair<std::string, int> hex1, const std::pair<std::string, int> hex2, std::string& playerId) const {
+    for (const auto& settlement : settlements) {
+        if ((settlement.hex1.first == hex1.first && settlement.hex1.second == hex1.second) &&
+            (settlement.hex2.first == hex2.first && settlement.hex2.second == hex2.second) &&
+            (settlement.hex3.first == "NULL" && settlement.hex3.second == 0) ||
+            (settlement.hex1.first == hex2.first && settlement.hex1.second == hex2.second) &&
+            (settlement.hex2.first == hex1.first && settlement.hex2.second == hex1.second) &&
+            (settlement.hex3.first == "NULL" && settlement.hex3.second == 0)) {
+            if (!settlement.occupied) {
+                settlement.setOccupied(true);
+                settlement.setPlayerId(playerId);
+                /*here need to chack if the player have a Road to this settlement.*/
                 return &settlement;
             }
             else {
-                std::cout << "Settlement is isOccupied() by " << settlement.PlayerId() << std::endl;
-                std::cout << "Select a settlement from the list of unisOccupied() settlements:" << std::endl;
+                std::cout << "Settlement is occupied by " << settlement.playerId << std::endl;
+                std::cout << "Select a settlement from the list of unoccupied settlements:" << std::endl;
                 BoardGuide();
                 return nullptr;
             }
         }
     }
     std::cout << "There is no such settlement in the board!" << std::endl;
-    std::cout << "Select a settlement from the list of unisOccupied() settlements:" << std::endl;
+    std::cout << "Select a settlement from the list of unoccupied settlements:" << std::endl;
     BoardGuide();
     return nullptr;
 }
 
-const Settlement* Board::findSettlementById(int settlementId) {
+
+const Settlement* Board::findSettlementById(int settlementId) const {
     for (auto& settlement : settlements) {
-        if (settlement.SettlementId() == settlementId) {
+        if (settlement.settlementId == settlementId) {
             return &settlement;
         }
     }
     return nullptr; // Return nullptr if not found
 }
 
+// const Settlement* Board::isPlaceAvailable_byID(int settlementId, std::string& playerId) const {
+//     const Settlement* settlement = (Settlement*)malloc(sizeof(Settlement));;
+//     settlement = findSettlementById(settlementId);
+//     if (settlement != nullptr)
+//     {
+//         if (!(*settlement).occupied){
+//                 (*settlement).setOccupied(true);
+//                 std::cout << "\n" << settlement->occupied << " 1\n" << std::endl;
+//                 (*settlement).setPlayerId(playerId);
+//                 std::cout << "\n" << settlement->playerId << " 2\n" << std::endl;
+//                 return &(*settlement);
+//             }
+//             else {
+//                 std::cout << "Settlement is occupied by " << (*settlement).playerId << std::endl;
+//                 std::cout << "Select a settlement from the list of unoccupied settlements:" << std::endl;
+//                 BoardGuide();
+//                 return nullptr;
+//             }
+//     }
+//     std::cout << "There is no such settlement in the board!" << std::endl;
+//     std::cout << "Select a settlement from the list of unoccupied settlements:" << std::endl;
+//     BoardGuide();
+//     return nullptr;
+// }
 
-bool Board::isRoadAvailable(const Settlement* u, int toSettlementId, std::string& playerId) {
-    const Settlement* v = findSettlementById(toSettlementId);
+const Settlement* Board::isPlaceAvailable_byID(int settlementId, std::string& playerId) const {
+    for (const auto& settlement : settlements) {
+        if (settlement.settlementId == settlementId) {
+            if (!settlement.occupied){
+                settlement.setOccupied(true);
+                std::cout << "\n" << settlement.occupied << " 1\n" << std::endl;
+                settlement.setPlayerId(playerId);
+                std::cout << "\n" << settlement.playerId << " 2\n" << std::endl;
+                //SET setOccupied;
+                //SET setplayerId;
+                return &settlement;
+            }
+            else {
+                std::cout << "Settlement is occupied by " << settlement.playerId << std::endl;
+                std::cout << "Select a settlement from the list of unoccupied settlements:" << std::endl;
+                BoardGuide();
+                return nullptr;
+            }
+        }
+    }
+    std::cout << "There is no such settlement in the board!" << std::endl;
+    std::cout << "Select a settlement from the list of unoccupied settlements:" << std::endl;
+    BoardGuide();
+    return nullptr;
+}
+
+bool Board::isRoadAvailable(const Settlement* u, int settlementId, std::string& playerId) const {
+    const Settlement* v = findSettlementById(settlementId);
     if (u != nullptr && v != nullptr){
-        for (auto& edge : edges) {
-            if (edge.Settlement1() == u && edge.Settlement2() == v)
+        for (const auto& edge : edges) {
+            if (edge.settlement1 == u && edge.settlement2 == v)
             {
-                if (edge.Roads() == 0)
+                if (edge.roads == 0)
                 {
                     edge.setRoads(1);
                     edge.setPlayerId(playerId);
                     return true;
                 }
-                if (edge.Roads() == 1 && edge.PlayerId() == playerId)
+                if (edge.roads == 1 && edge.playerId == playerId)
                 {
                     edge.setRoads(2);
                     return true;
                 }
-                if (edge.Roads() == 1 && edge.PlayerId() != playerId && edge.Settlement2()->PlayerId() != playerId)
+                if (edge.roads == 1 && edge.playerId != playerId && edge.settlement2->playerId != playerId)
                 {
                     edge.setRoads(2);
                     edge.setRoadThief(playerId);
@@ -378,10 +378,10 @@ bool Board::isRoadAvailable(const Settlement* u, int toSettlementId, std::string
     return false;
 }
 
-const Edge* Board::findEdgeByUV(const Settlement* u, const Settlement* v, std::string& playerId) {
+const Edge* Board::findEdgeByUV(const Settlement* u, const Settlement* v, std::string& playerId) const {
     if (u != nullptr && v != nullptr){
         for (const auto& edge : edges) {
-            if (edge.Settlement1() == u && edge.Settlement2() == v){
+            if (edge.settlement1 == u && edge.settlement2 == v){
                 return &edge;
             }
         }
@@ -390,11 +390,10 @@ const Edge* Board::findEdgeByUV(const Settlement* u, const Settlement* v, std::s
 }
 
 bool Board::findEdgeToV(const Settlement* v, std::string& playerId) const {
+    // printf("333333333333333333333\n");
     if (v != nullptr){
-        std::cout << std::endl << v->isOccupied() << std::endl;
-        std::cout << std::endl << v->PlayerId() << std::endl;
         for (const auto& edge : edges) {
-            if (edge.Settlement1() == v && edge.PlayerId() == playerId && edge.Roads() == 2) {
+            if (edge.settlement2 == v && edge.playerId == playerId && edge.roads == 2){
                 return true;
             }
         }
@@ -460,10 +459,10 @@ void Board::printSometing() {
 
 // void Board::occupyPlace(const std::vector<std::string>& places, const std::vector<int>& placesNum) {
 //     for (auto& settlement : settlements) {
-//         if ((settlement.Hex1()().first == places[0] && settlement.Hex1()().second == placesNum[0]) ||
-//             (settlement.Hex2()().first == places[1] && settlement.Hex2()().second == placesNum[1]) ||
-//             (settlement.Hex3()().first == places[2] && settlement.Hex3()().second == placesNum[2])) {
-//             settlement.isOccupied() = true;
+//         if ((settlement.hex1.first == places[0] && settlement.hex1.second == placesNum[0]) ||
+//             (settlement.hex2.first == places[1] && settlement.hex2.second == placesNum[1]) ||
+//             (settlement.hex3.first == places[2] && settlement.hex3.second == placesNum[2])) {
+//             settlement.occupied = true;
 //         }
 //     }
 // }
