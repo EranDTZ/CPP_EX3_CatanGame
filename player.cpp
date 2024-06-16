@@ -118,45 +118,10 @@ Player::Player(const std::string& name) : name(name), points(0), isTurn(false) ,
         int settlementId = -1;
         if (points == 0 || points == 1 || buySettelemntCard())
         {
-            // std::pair<std::string, int> hex1;
-            // std::pair<std::string, int> hex2;
-            // std::pair<std::string, int> hex3;
-            // std::string type = "NULL";
-            // int resources = 0;
-            // int number = 0;
-            
             std::cout << "A settlement is an intersection of 2 OR 3 resources! Choose Wisely\n";
-            // std::cout << "insert the number of resources in your settlement: \n";
-            // std::cin >> resources;
-            // std::cout << name << ", choose a place for your settlement by inserting the resources types & Numbers: ";
+
             std::cout << name << ", choose a place for your settlement by inserting the settlementId: ";
             std::cin >> settlementId;
-            // for (int i = 0; i < 3; i++)
-            // {
-            //     std::cout << "resource " << i+1 << " type: "<< std::endl;
-            //     std::cin >> type;
-            //     std::cout << "resource " << i+1 << " number: "<< std::endl;
-            //     std::cin >> number;
-            //     if (i == 0)
-            //     {
-            //         hex1.first = type;
-            //         hex1.second = number;
-            //     }
-            //     if (i == 1)
-            //     {
-            //         hex2.first = type;
-            //         hex2.second = number;
-            //     }
-            //     if (i == 2)
-            //     {
-            //         hex3.first = type;
-            //         hex3.second = number;
-            //     }
-            //     if (resources == 2 && i == 1)
-            //     {
-            //         break;
-            //     }
-            // }
             if (settlementId > 0 && settlementId < 37)
             {
                 v = board.isPlaceAvailable_byID(settlementId,name);
@@ -183,38 +148,7 @@ Player::Player(const std::string& name) : name(name), points(0), isTurn(false) ,
                 cards.push_back("Fields");
                 throw std::runtime_error("Place already occupied.");
             } 
-            
-            // if (resources == 2)
-            // {
-            //     v = board.is2PlaceAvailable(hex1,hex2,name);
-            //     if (v != nullptr && board.findEdgeToV(v,name)) {
-            //         playerSettlements.push_back(*v);
-            //     }
-            //     else
-            //     {
-            //         cards.push_back("Forest");
-            //         cards.push_back("Hills");
-            //         cards.push_back("Pasture");
-            //         cards.push_back("Fields");
-            //         throw std::runtime_error("Place already occupied.");
-            //     } 
-            // }
-            // else{
-            //     printf("&&&&&&&&&&&&&&&&&&&\n");
-            //     v = board.isPlaceAvailable_byID(settlementId,name);
-            //     printf("&&&&&&&&&&&&&&&&&&&\n");
-            //     if (v != nullptr && board.findEdgeToV(v,name)) {
-            //         playerSettlements.push_back(*v);
-            //     }
-            //     else
-            //     {
-            //         cards.push_back("Forest");
-            //         cards.push_back("Hills");
-            //         cards.push_back("Pasture");
-            //         cards.push_back("Fields");
-            //         throw std::runtime_error("Place already occupied.");
-            //     } 
-            // }
+
             if (points == 0 || points == 1)
             {
                 int id = v->SettlementId();
@@ -223,6 +157,7 @@ Player::Player(const std::string& name) : name(name), points(0), isTurn(false) ,
             points++;
             return;
         }
+        
         else std::cout << "You don't have all tha resourceTypes in your cards" << endl;
     }
 

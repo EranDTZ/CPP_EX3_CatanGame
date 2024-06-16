@@ -41,32 +41,70 @@ public:
 };
 
 
+class Road {
+private:
+    std::string playerId;
+
+public:
+    Road()
+        : playerId("NULL") {}
+
+    void setPlayerId(const std::string& id) { playerId = id; }
+    std::string PlayerId() const { return playerId; }
+};
+
+
+
 class Edge {
 private:
-    int edgeId;
-    int roads;
-    std::string playerId;
-    std::string roadThief;
+    int occupied;
+    // int roads;
+    // std::string playerId;
+    // std::string roadThief;
+    Road* road1;
+    Road* road2;
+    Road* road3;
     Settlement* settlement1;
     Settlement* settlement2;
 
 public:
-    Edge()
-        : settlement1(nullptr), settlement2(nullptr), roads(0), playerId("NULL"), roadThief("NULL") {}
+    // Edge()
+    //     : settlement1(nullptr), settlement2(nullptr), roads(0), playerId("NULL"), roadThief("NULL") {}
+
+    // Edge(Settlement* s1, Settlement* s2) : settlement1(s1), settlement2(s2), playerId("NULL"), roadThief("NULL")  {}
+
+    // Edge(Settlement* s1, Settlement* s2, Road* road1) : settlement1(s1), settlement2(s2), playerId("NULL"), roadThief("NULL")  {}
     
-    Edge(Settlement* s1, Settlement* s2) : settlement1(s1), settlement2(s2), roads(0), playerId("NULL"), roadThief("NULL")  {}
+    // Edge(Settlement* s1, Settlement* s2, Road* road1, Road* road2) : settlement1(s1), settlement2(s2), playerId("NULL"), roadThief("NULL")  {}
 
-    Edge(int id, Settlement* s1, Settlement* s2) : edgeId(id), roads(0), playerId(""), settlement1(s1), settlement2(s2) {}
+    // Edge(Settlement* s1, Settlement* s2, Road* road1, Road* road2, Road* road3) : settlement1(s1), settlement2(s2), playerId("NULL"), roadThief("NULL")  {}
 
-    void setRoads(int r) { roads = r; }
-    void setPlayerId(const std::string& id) { playerId = id; }
-    void setRoadThief(const std::string& id) { roadThief = id; }
-    int getEdgeId() const { return edgeId; }
-    int Roads() const { return roads; }
-    std::string PlayerId() const { return playerId; }
-    std::string RoadThief() const { return roadThief; }
+    // Edge(int id, Settlement* s1, Settlement* s2) : edgeId(id), roads(0), playerId(""), settlement1(s1), settlement2(s2) {}
+
+
+
+    // Edge()
+    //     : settlement1(nullptr), settlement2(nullptr) {}
+
+    // Edge(Settlement* s1, Settlement* s2) : settlement1(s1), settlement2(s2), occupied(false) {}
+
+    Edge(Settlement* s1, Settlement* s2, Road* road1) : settlement1(s1), settlement2(s2), road1(new Road()), occupied(false) {}
+    
+    Edge(Settlement* s1, Settlement* s2, Road* road1, Road* road2) : settlement1(s1), settlement2(s2), road1(new Road()), road2(new Road()), occupied(false) {}
+
+    Edge(Settlement* s1, Settlement* s2, Road* road1, Road* road2, Road* road3) : settlement1(s1), settlement2(s2), road1(new Road()), road2(new Road()), road3(new Road()), occupied(false) {}
+
+    // void setRoads(int r) { roads = r; }
+    // std::string PlayerId() const { return playerId; }
+    // std::string RoadThief() const { return roadThief; }
+    // int Roads() const { return roads; }
+    void setOccupied(bool occ) { occupied = occ; }
+    bool isOccupied() const { return occupied; }
     Settlement* Settlement1() const { return settlement1; }
     Settlement* Settlement2() const { return settlement2; }
+    Road* Road1() const { return road1; }
+    Road* Road2() const { return road2; }
+    Road* Road3() const { return road3; }
 };
 
 class Board {
@@ -75,6 +113,7 @@ public:
     void initializeBoard();
     void initializeEdges();
     void printBoard();
+    void printEdges();
     void ResourceGuide();
     void BoardGuide() const;
     void printSometing();
@@ -84,6 +123,7 @@ public:
     Settlement* isPlaceAvailable_byID(int settlementId, std::string& playerId);
     bool isRoadAvailable(const Settlement* u, int settlementId, std::string& playerId);
     const Edge* findEdgeByUV(const Settlement* u, const Settlement* v, std::string& playerId);
+    bool findEdgeFromU(const Settlement* u, std::string& playerId);
     bool findEdgeToV(const Settlement* v, std::string& playerId) const;
     void occupyPlace(const std::vector<std::string>& places, const std::vector<int>& placesNum);
 private:
