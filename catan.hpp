@@ -7,15 +7,20 @@
 
 class Catan {
 public:
+
     Catan(Player& p1, Player& p2, Player& p3);
+    void initializeDevelopmentCard();
     void ChooseStartingPlayer();
     Board& getBoard();
     void printWinner();
+    std::vector<Player*> getPlayers() const { return players; } 
+    std::string getDevelopmentCard();
 
 private:
     Board board;
     std::vector<Player*> players;
     int currentPlayerIndex;
+    std::vector<std::string> DevelopmentCard;
 };
 
 #endif // CATAN_HPP

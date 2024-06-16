@@ -20,5 +20,17 @@ int main() {
 
     p1.placeSettelemnt(board);
     p1.endTurn();
+    p2.placeSettelemnt(board);
+    p2.endTurn();
+    p3.placeSettelemnt(board);
+    p3.endTurn();
+
+    // p1.placeSettelemnt(board);
+    // p1.endTurn();
+    // p2.placeSettelemnt(board);
+    // p2.endTurn();
+    // p3.placeSettelemnt(board);
+    // p3.endTurn();
+    
     return 0;
 }

@@ -134,8 +134,8 @@ void Board::initializeEdges() {
         {1, 3} ,{2, 6} , {3, 10} ,{6, 14} , {10, 23} ,{14, 27} , {23, 31} ,{27, 34} , {31, 35} ,{34, 36}
     };
 
-    Settlement* settlement1 = nullptr;
-    Settlement* settlement2 = nullptr;
+    Settlement* settlement1 = new Settlement();
+    Settlement* settlement2 = new Settlement();
 
     Road* r1 = new Road();
     Road* r2 = new Road();
@@ -318,7 +318,7 @@ Settlement* Board::isPlaceAvailable_byID(int settlementId, std::string& playerId
                 return &settlement;
             }
             else {
-                std::cout << "Settlement is isOccupied() by " << settlement.PlayerId() << std::endl;
+                std::cout << "Settlement is is occupied by " << settlement.PlayerId() << std::endl;
                 std::cout << "Select a settlement from the list of unOccupied settlements:" << std::endl;
                 BoardGuide();
                 return nullptr;
@@ -348,12 +348,9 @@ bool Board::isRoadAvailable(const Settlement* u, int toSettlementId, std::string
             if (edge.Settlement1()->SettlementId() == u->SettlementId() && edge.Settlement2()->SettlementId() == v->SettlementId()
             || edge.Settlement1()->SettlementId() == v->SettlementId() && edge.Settlement2()->SettlementId() == u->SettlementId()) {
 
-                std::cout << std::endl << "edge: " << edge.Settlement1()->SettlementId() << ", " << edge.Settlement2()->SettlementId() << std::endl;
-
-                std::cout << std::endl << edge.Road1()->PlayerId() << std::endl;
-
                 if (edge.Road1()->PlayerId() == "NULL") {
                     edge.Road1()->setPlayerId(playerId);
+                    std::cout << std::endl << edge.Road1()->PlayerId() << std::endl;
                     return true;
                 }
                 else if (edge.Road2() != nullptr && edge.Road2()->PlayerId() == "NULL") {
@@ -364,10 +361,14 @@ bool Board::isRoadAvailable(const Settlement* u, int toSettlementId, std::string
                     edge.Road3()->setPlayerId(playerId);
                     return true;
                 }
+                else {
+                    std::cout << "This Edge is full, it can`t hold anymore Roads!" << std::endl;
+                    return false;
+                }
             }
         }
     }
-    std::cout << "This Edge is full, it can`t hold anymore Roads!" << std::endl;
+    std::cout << "There is no Edge on the board!" << std::endl;
     return false;
 }
 

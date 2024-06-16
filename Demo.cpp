@@ -76,6 +76,7 @@
 
 //     p1.rollDice();                       // Lets say it's print 6. Then, p1 gets bricks from the hills.
 //     p1.trade(p2, "wood", "brick", 1, 1); // p1 trades 1 wood for 1 brick with p2.
+//     p1.trade(p2, "wood", "brick", 1, 1);
 //     p1.endTurn();                        // p1 ends his turn.
 
 //     p2.rollDice();           // Lets say it's print 9. Then, p3 gets wool from the Pasture Land, p2 gets wool from the Pasture Land.
