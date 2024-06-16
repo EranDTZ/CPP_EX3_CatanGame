@@ -19,6 +19,7 @@ class Player {
         bool isTrade(Player& other);
         void buyDevelopmentCard(Catan& catan);
         void useDevelopmentCard(Catan& catan ,Board& board);
+        void bankTrade();
         void printPoints() const;
         int getPoints() const;
         bool buySettelemnt();

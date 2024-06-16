@@ -24,6 +24,20 @@ int main() {
     p2.endTurn();
     p3.placeSettelemnt(board);
     p3.endTurn();
+    
+    p1.setTurn(true);
+    p1.rollDice(catan);
+    
+    for (auto& card : p1.Cards())
+    {
+      std::cout << card << std::endl;  
+    }
+
+    for (auto& Settlements : p1.PlayerSettlements())
+    {
+      std::cout << Settlements.SettlementId() << std::endl;  
+    }
+    
 
     // p1.placeSettelemnt(board);
     // p1.endTurn();

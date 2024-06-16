@@ -172,14 +172,41 @@ Player::Player(const std::string& name) : name(name), points(0), isTurn(false) ,
         {
             /* code */
         }
+
         if (card == "Point")
         {
             points++;
         }
+
         if (card == "Monopoly")
         {
-            /* code */
+            int count = 0;
+            std::vector<std::string> resourceTypes = {"Forest", "Hills", "Pasture", "Fields","Mountains"};
+            std::string resource;
+            std::cout << "Choose resource type to take from all players: " << std::endl;
+            std::cin >> resource;
+            auto iter = std::find(resourceTypes.begin(), resourceTypes.end(), resource);
+            if (iter != resourceTypes.end()) {
+                std::cout << "resource doesn't exsist: bad syntx" << std::endl;
+                return;
+            }
+            for (auto& player : catan.getPlayers()) {
+                for (auto& card : player->cards) {
+                    if (card == resource)
+                    {
+                        auto iter = std::find(player->cards.begin(), player->cards.end(), resource);
+                        player->cards.erase(iter);
+                        count++;
+                    }    
+                }
+            }
+
+            for (size_t i = 0; i < count; i++)
+            {
+                cards.push_back(resource);
+            } 
         }
+
         if (card == "Resources")
         {
             std::vector<std::string> resourceTypes = {"Forest", "Hills", "Pasture", "Fields","Mountains"};
@@ -189,29 +216,21 @@ Player::Player(const std::string& name) : name(name), points(0), isTurn(false) ,
             std::cin >> resource1;
             std::cout << "Choose resource type 2 : " << std::endl;
             std::cin >> resource2;
-            bool badsyntx1 = false;
-            bool badsyntx2 = false;
-            for (auto& resource : resourceTypes)
-            {
-                if (resource1 == resource)
-                {
-                    badsyntx1 = true;
-                }
-                if (resource2 == resource)
-                {
-                    badsyntx2 = true;
-                }
+            
+            auto iter = std::find(resourceTypes.begin(), resourceTypes.end(), resource1);
+            if (iter != resourceTypes.end()) {
+                std::cout << "resource doesn't exsist: bad syntx" << std::endl;
+                return;
             }
-            if (badsyntx1 && badsyntx2)
-            {
-                cards.push_back(resource1);
-                cards.push_back(resource2);
+            iter = std::find(resourceTypes.begin(), resourceTypes.end(), resource2);
+            if (iter != resourceTypes.end()) {
+                std::cout << "resource doesn't exsist: bad syntx" << std::endl;
+                return;
             }
-            else
-            {
-                //give a player 4 cards of the same resourceTypes for bank trade
-            }
+            cards.push_back(resource1);
+            cards.push_back(resource2);
         }
+
         if (card == "Roads")
         {
             placeTowRoads(board);
@@ -219,6 +238,40 @@ Player::Player(const std::string& name) : name(name), points(0), isTurn(false) ,
 
         developmentCard.erase(iter);
     }
+
+
+    void Player::bankTrade() {
+        std::vector<std::string> resourceTypes = {"Forest", "Hills", "Pasture", "Fields","Mountains"};
+        std::string resource_give;
+        std::string resource_get;
+        int four = 0;
+        std::cout << "resource type to give (4) : " << std::endl;
+        std::cin >> resource_give;
+        std::cout << "resource type to get : " << std::endl;
+        std::cin >> resource_get;
+        for (auto& card : cards) {
+            if (card == resource_give)
+            {
+                four++;
+            }
+            if (four == 4)
+            {
+                break;
+            }  
+        }
+        auto iter = std::find(resourceTypes.begin(), resourceTypes.end(), resource_get);
+        if (iter != resourceTypes.end()) {
+            std::cout << "resource doesn't exsist: bad syntx" << std::endl;
+            return;
+        }
+        for (size_t i = 0; i < four; i++)
+        {
+            iter = std::find(cards.begin(), cards.end(), resource_give);
+            cards.erase(iter);
+        }
+        cards.push_back(resource_get);  
+    }
+
 
     bool Player::buySettelemnt() {
         bool allCardsFound = true;
@@ -284,6 +337,16 @@ Player::Player(const std::string& name) : name(name), points(0), isTurn(false) ,
                 //Chack if it is the first or the second Settlement.
                 if (points == 0 || points == 1)
                 {
+                    if (points == 1)
+                    {
+                        cards.push_back(v->Hex1().first);
+                        cards.push_back(v->Hex2().first);
+                        // if (v->Hex3() == nullptr)
+                        // {
+                        //     /* code */
+                        // }
+                        
+                    }
                     playerSettlements.push_back(*v);
                 }
                 //Check if a player have a phth to the settlement befor letting him take it.
