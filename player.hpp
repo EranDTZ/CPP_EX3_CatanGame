@@ -13,7 +13,7 @@ class Player {
         Player(const std::string& name);
         std::string getName() const;
         void setTurn(bool turn) { isTurn = turn; }
-        void rollDice(Catan& catan);
+        void rollDice(Catan& catan, Board& board);
         void endTurn();
         void trade(Player& other);
         bool isTrade(Player& other);

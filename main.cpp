@@ -13,10 +13,6 @@ int main() {
     catan.ChooseStartingPlayer();
     Board& board = catan.getBoard();
 
-    // board.printBoard();
-    // board.BoardGuide();
-    // board.ResourceGuide();
-    // board.printSometing();
 
     p1.placeSettelemnt(board);
     p1.endTurn();
@@ -26,7 +22,7 @@ int main() {
     p3.endTurn();
     
     p1.setTurn(true);
-    p1.rollDice(catan);
+    p1.rollDice(catan,board);
     
     for (auto& card : p1.Cards())
     {

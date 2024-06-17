@@ -30,6 +30,10 @@ public:
 
     Settlement(int id) : settlementId(id), occupied(false), playerId("NULL") {}
 
+
+    void setHex1Int(int value) { hex1.second = value; } 
+    void setHex2Int(int value) { hex1.second = value; } 
+    void setHex3Int(int value) { hex1.second = value; } 
     void setOccupied(bool occ) { occupied = occ; }
     void setPlayerId(const std::string& id) { playerId = id; }
     bool isOccupied() const { return occupied; }
@@ -58,9 +62,6 @@ public:
 class Edge {
 private:
     int occupied;
-    // int roads;
-    // std::string playerId;
-    // std::string roadThief;
     Road* road1;
     Road* road2;
     Road* road3;
@@ -116,16 +117,16 @@ public:
     void printEdges();
     void ResourceGuide();
     void BoardGuide() const;
-    void printSometing();
-    Settlement* is3PlaceAvailable(const std::pair<std::string, int> hex1, const std::pair<std::string, int> hex2, const std::pair<std::string, int> hex3, std::string& playerId);
-    Settlement* is2PlaceAvailable(const std::pair<std::string, int> hex1, const std::pair<std::string, int> hex2, std::string& playerId);
+    void settlementGuide();
+    // Settlement* is3PlaceAvailable(const std::pair<std::string, int> hex1, const std::pair<std::string, int> hex2, const std::pair<std::string, int> hex3, std::string& playerId);
+    // Settlement* is2PlaceAvailable(const std::pair<std::string, int> hex1, const std::pair<std::string, int> hex2, std::string& playerId);
     const Settlement* findSettlementById(int settlementId);
     Settlement* isPlaceAvailable_byID(int settlementId, std::string& playerId);
     bool isRoadAvailable(const Settlement* u, int settlementId, std::string& playerId);
     const Edge* findEdgeByUV(const Settlement* u, const Settlement* v, std::string& playerId);
     bool findEdgeFromU(const Settlement* u, std::string& playerId);
     bool findEdgeToV(const Settlement* v, std::string& playerId) const;
-    void occupyPlace(const std::vector<std::string>& places, const std::vector<int>& placesNum);
+    bool Knight(std::string resource, int num, std::string player, bool boo);
 private:
     std::vector<std::pair<std::string, int>> hexes;
     std::vector<Settlement> settlements;

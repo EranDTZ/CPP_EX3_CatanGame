@@ -6,6 +6,7 @@
 #include <ctime>
 #include <vector>
 #include <algorithm>
+#include <string.h>
 #define SIZE 1024
 
 using namespace std;
@@ -23,7 +24,7 @@ Player::Player(const std::string& name) : name(name), points(0), isTurn(false) ,
     }
 
 
-    void Player::rollDice(Catan& catan) {
+    void Player::rollDice(Catan& catan, Board& board) {
         if (!isTurn) {
             throw runtime_error(name + " tried to roll the dice but it's not their turn.");
         }
@@ -36,6 +37,57 @@ Player::Player(const std::string& name) : name(name), points(0), isTurn(false) ,
         }
 
         cout << name << " rolled a " << diceSum << endl;
+
+        //If player rolled a 7 activate Knight 
+        if (diceSum == 7) {
+            bool boo = true;
+            int num = -1;
+            std::string resource;
+            std::string player;
+            std::cout << "You activated Knight. Choose where to put it." << std::endl;
+            std::cout << "Resource: " << std::endl;
+            std::cin >> resource;
+            std::cout << "Resource number: " << std::endl;
+            std::cin >> num;
+            
+            //Chack if Player inserted a currect other player name if not insert agine.
+            while (boo)
+            {
+                std::cout << "Choose a player to steal from:" << std::endl;
+                std::cin >> player;
+
+                auto iter = std::find_if(catan.getPlayers().begin(), catan.getPlayers().end(), 
+                                        [&](Player* p) { return p->getName() == player; });
+                if (iter == catan.getPlayers().end()) {
+                    std::cout << "Player doesn't exist: bad syntax, try again" << std::endl;
+                    boo = true;
+                } else {
+                    boo = false;
+                }
+            }
+            
+            //Chack if resource is good & number is good & player is good & Knight is activated properly
+            if (board.Knight(resource, num, player, boo)){
+                //Steal from choosen player
+                for (auto& other : catan.getPlayers()) {
+                    if (other->getName() == player) { 
+                        if(!other->Cards().empty()) {
+                            std::string card;
+                            // Get the first card
+                            card = other->Cards().front();
+                            // Remove the first card
+                            other->Cards().erase(other->Cards().begin());
+                            // Give card to current player
+                            cards.push_back(card);
+                        } 
+                        else {
+                            std::cout << player << " pack is empty." << std::endl;
+                        }
+                    }
+                } 
+            }
+        }
+        
         //For each player that have a settlements connected to that number give him the resource card 
         for (auto& player : catan.getPlayers())
         {
@@ -158,6 +210,7 @@ Player::Player(const std::string& name) : name(name), points(0), isTurn(false) ,
         developmentCard.push_back(catan.getDevelopmentCard());
     }
 
+
     void Player::useDevelopmentCard(Catan& catan ,Board& board) {
         std::string card;
         std::cout << name << ", enter which development card you want to use: " << endl;
@@ -168,9 +221,54 @@ Player::Player(const std::string& name) : name(name), points(0), isTurn(false) ,
             std::cout << "cord doesn't exsist." << std::endl;
             return;
         }
+
         if (card == "Knight")
         {
-            /* code */
+            bool boo = true;
+            int num = -1;
+            std::string resource;
+            std::string player;
+            std::cout << "You activated Knight. Choose where to put it." << std::endl;
+            std::cout << "Resource: " << std::endl;
+            std::cin >> resource;
+            std::cout << "Resource number: " << std::endl;
+            std::cin >> num;
+            
+            while (boo) {
+                std::cout << "Choose a player to steal from:" << std::endl;
+                std::cin >> player;
+
+                auto iter = std::find_if(catan.getPlayers().begin(), catan.getPlayers().end(), 
+                                        [&](Player* p) { return p->getName() == player; });
+
+                if (iter == catan.getPlayers().end()) {
+                    std::cout << "Player doesn't exist: bad syntax, try again" << std::endl;
+                    boo = true;
+                } 
+                else {
+                    boo = false;
+                }
+            }
+            
+            if (board.Knight(resource, num, player, boo)) {
+
+                for (auto& other : catan.getPlayers()) {
+                    if (other->getName() == player) {
+                        if(!other->Cards().empty()) {
+                            std::string card;
+                            // Get the first card
+                            card = other->Cards().front();
+                            // Remove the first card
+                            other->Cards().erase(other->Cards().begin());
+                            // Give card to current player
+                            cards.push_back(card);
+                        } 
+                        else {
+                            std::cout << player << " pack is empty." << std::endl;
+                        }
+                    }
+                } 
+            }
         }
 
         if (card == "Point")
@@ -316,7 +414,7 @@ Player::Player(const std::string& name) : name(name), points(0), isTurn(false) ,
     }
 
     void Player::placeSettelemnt(Board& board){
-        const Settlement* v = (Settlement*)malloc(sizeof(Settlement));
+        const Settlement* v = new Settlement();
         int settlementId = -1;
         if (points == 0 || points == 1 || buySettelemnt())
         {
@@ -341,11 +439,11 @@ Player::Player(const std::string& name) : name(name), points(0), isTurn(false) ,
                     {
                         cards.push_back(v->Hex1().first);
                         cards.push_back(v->Hex2().first);
-                        // if (v->Hex3() == nullptr)
-                        // {
-                        //     /* code */
-                        // }
-                        
+
+                        if (v->Hex3().first != "NULL")
+                        {
+                            cards.push_back(v->Hex1().first);
+                        }
                     }
                     playerSettlements.push_back(*v);
                 }
@@ -355,7 +453,7 @@ Player::Player(const std::string& name) : name(name), points(0), isTurn(false) ,
                     playerSettlements.push_back(*v);
                 }
             }
-            else{
+            else {
                 cards.push_back("Forest");
                 cards.push_back("Hills");
                 cards.push_back("Pasture");

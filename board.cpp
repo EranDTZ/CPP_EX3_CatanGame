@@ -12,7 +12,6 @@ Board::Board() {
     ResourceGuide();
     printBoard();
     BoardGuide();
-    // printEdges();
 }
 /*maybe it should be realized using a graph , 
 So every Node is a meeting of - 3 resourceTypes OR 2 resourceTypes and NULL,
@@ -308,6 +307,62 @@ void Board::BoardGuide() const {
    
 }
 
+
+void Board::settlementGuide() { 
+    // Map resource types to ANSI color codes
+    std::map<std::string, std::string> colorMap = {
+        {"Forest", "\033[0;32m⬢ \033[0m"},        // Green hexagon
+        {"Hills", "\033[38;5;208m⬢ \033[0m"}, // Orange hexagon
+        {"Pasture", "\033[37m⬢ \033[0m"},  // White hexagon
+        {"Fields", "\033[33m⬢ \033[0m"},         // Yellow hexagon
+        {"Mountains", "\033[90m⬢ \033[0m"},     // Gray hexagon
+        {"Desert", "\033[31m⬢ \033[0m"},        // Red hexagon
+        {"default", "\033[0m⬢ \033[0m"}         // Default hexagon
+    };
+
+    // Print the board with colored dots
+    std::cout << "Board Layout:" << std::endl;
+    
+    std::cout << "         / \\ 1 / \\ 2 / \\" << std::endl;
+    std::cout << "        /   \\ /   \\ /   \\" << std::endl;
+
+    std::cout << "       |     |     |     | " << std::endl;
+    
+    std::cout << "       3     4     5     6 " << std::endl;
+
+    std::cout << "      / \\   / \\   / \\   / \\" << std::endl;
+    std::cout << "     /   \\ /   \\ /   \\ /   \\" << std::endl;
+
+    std::cout << "          7     8     9      " << std::endl;
+    std::cout << "    |     |     |     |     |" << std::endl;
+    std::cout << "   10    11    12    13    14" << std::endl;
+
+    std::cout << "   / \\   / \\   / \\   / \\   / \\" << std::endl;
+    std::cout << "  /   \\ /   \\ /   \\ /   \\ /   \\" << std::endl;
+
+    std::cout << "      15    16    17    18      " << std::endl;
+    std::cout << " |     |     |     |     |     |" << std::endl;
+    std::cout << "      19    20    21    22      " << std::endl;
+    
+    std::cout << "  \\   / \\   / \\   / \\   / \\   /" << std::endl;
+    std::cout << "   \\ /   \\ /   \\ /   \\ /   \\ /" << std::endl;
+
+    std::cout << "   23    24    25    26    27" << std::endl;
+    std::cout << "    |     |     |     |     |" << std::endl;
+    std::cout << "         28    29    30      " << std::endl;
+    
+    std::cout << "     \\   / \\   / \\   / \\   /" << std::endl;
+    std::cout << "      \\ /   \\ /   \\ /   \\ /" << std::endl;
+
+    std::cout << "      31    32    33    34" << std::endl;
+    std::cout << "       |     |     |     |" << std::endl;
+    
+    std::cout << "       \\    / \\   / \\   /" << std::endl;
+    std::cout << "        \\  /35 \\ / 36\\ /" << std::endl;
+   
+}
+
+
 Settlement* Board::isPlaceAvailable_byID(int settlementId, std::string& playerId) {
     for (auto& settlement : settlements) {
         if (settlement.SettlementId() == settlementId) {
@@ -429,68 +484,65 @@ bool Board::findEdgeToV(const Settlement* v, std::string& playerId) const {
     return false;
 }
 
-void Board::printSometing() { 
-    // Map resource types to ANSI color codes
-    std::map<std::string, std::string> colorMap = {
-        {"Forest", "\033[0;32m⬢ \033[0m"},        // Green hexagon
-        {"Hills", "\033[38;5;208m⬢ \033[0m"}, // Orange hexagon
-        {"Pasture", "\033[37m⬢ \033[0m"},  // White hexagon
-        {"Fields", "\033[33m⬢ \033[0m"},         // Yellow hexagon
-        {"Mountains", "\033[90m⬢ \033[0m"},     // Gray hexagon
-        {"Desert", "\033[31m⬢ \033[0m"},        // Red hexagon
-        {"default", "\033[0m⬢ \033[0m"}         // Default hexagon
-    };
 
-    // Print the board with colored dots
-    std::cout << "Board Layout:" << std::endl;
+bool Board::Knight(std::string resource, int num, std::string player, bool boo) {
+    if (boo)
+    {
+        std::string resource;
+        std::string player;
+        std::cout << "you activated Knight choose where you put it." << std::endl;
+        std::cout << "resource: " << std::endl;
+        std::cin >> resource;
+        std::cout << "resource number: " << std::endl;
+        std::cin >> num;
+    }
     
-    std::cout << "         / \\ 1 / \\ 2 / \\" << std::endl;
-    std::cout << "        /   \\ /   \\ /   \\" << std::endl;
+    std::vector<std::string> resourceTypes = {"Forest", "Hills", "Pasture", "Fields", "Mountains"};
+    auto iter = std::find(resourceTypes.begin(), resourceTypes.end(), resource);
+    if (iter != resourceTypes.end()) {
+        std::cout << "resource doesn't exsist: bad syntx, try again" << std::endl;
+        boo = true;
+        Knight(resource,num,player,boo);
+    }
 
-    std::cout << "       |     |     |     | " << std::endl;
-    
-    std::cout << "       3     4     5     6 " << std::endl;
+    if (num < 2 || num > 12) {
+        std::cout << "resource number doesn't exsist: bad syntx, try again" << std::endl;
+        boo = true;
+        Knight(resource,num,player,boo);
+    }
 
-    std::cout << "      / \\   / \\   / \\   / \\" << std::endl;
-    std::cout << "     /   \\ /   \\ /   \\ /   \\" << std::endl;
+    boo = false;
+    int chang = -1;
+    //set Hexes int back to positive number to cancel the Knight on them
+    for (auto& settlement : settlements) {
+        if (settlement.Hex1().second < 0)
+        {
+            settlement.setHex1Int(settlement.Hex1().second * chang);
+        }
+        if (settlement.Hex2().second < 0)
+        {
+            settlement.setHex2Int(settlement.Hex1().second * chang);
+        }
+        if (settlement.Hex3().second < 0)
+        {
+            settlement.setHex3Int(settlement.Hex1().second * chang);
+        }
+    }
 
-    std::cout << "          7     8     9      " << std::endl;
-    std::cout << "    |     |     |     |     |" << std::endl;
-    std::cout << "   10    11    12    13    14" << std::endl;
-
-    std::cout << "   / \\   / \\   / \\   / \\   / \\" << std::endl;
-    std::cout << "  /   \\ /   \\ /   \\ /   \\ /   \\" << std::endl;
-
-    std::cout << "      15    16    17    18      " << std::endl;
-    std::cout << " |     |     |     |     |     |" << std::endl;
-    std::cout << "      19    20    21    22      " << std::endl;
-    
-    std::cout << "  \\   / \\   / \\   / \\   / \\   /" << std::endl;
-    std::cout << "   \\ /   \\ /   \\ /   \\ /   \\ /" << std::endl;
-
-    std::cout << "   23    24    25    26    27" << std::endl;
-    std::cout << "    |     |     |     |     |" << std::endl;
-    std::cout << "         28    29    30      " << std::endl;
-    
-    std::cout << "     \\   / \\   / \\   / \\   /" << std::endl;
-    std::cout << "      \\ /   \\ /   \\ /   \\ /" << std::endl;
-
-    std::cout << "      31    32    33    34" << std::endl;
-    std::cout << "       |     |     |     |" << std::endl;
-    
-    std::cout << "       \\    / \\   / \\   /" << std::endl;
-    std::cout << "        \\  /35 \\ / 36\\ /" << std::endl;
-   
+    //set Hexes int into to negative number to put the Knight on them
+    for (auto& settlement : settlements) {
+        if (settlement.Hex1().first == resource && settlement.Hex1().second == num)
+        {
+            settlement.setHex1Int(settlement.Hex1().second * chang);
+        }
+        if (settlement.Hex2().first == resource && settlement.Hex2().second == num)
+        {
+            settlement.setHex2Int(settlement.Hex1().second * chang);
+        }
+        if (settlement.Hex3().first == resource && settlement.Hex3().second == num)
+        {
+            settlement.setHex3Int(settlement.Hex1().second * chang);
+        }
+    }
+    return true;
 }
-
-
-
-// void Board::occupyPlace(const std::vector<std::string>& places, const std::vector<int>& placesNum) {
-//     for (auto& settlement : settlements) {
-//         if ((settlement.Hex1()().first == places[0] && settlement.Hex1()().second == placesNum[0]) ||
-//             (settlement.Hex2()().first == places[1] && settlement.Hex2()().second == placesNum[1]) ||
-//             (settlement.Hex3()().first == places[2] && settlement.Hex3()().second == placesNum[2])) {
-//             settlement.isOccupied() = true;
-//         }
-//     }
-// }
