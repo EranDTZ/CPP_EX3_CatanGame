@@ -31,28 +31,32 @@ void Catan::initializeDevelopmentCard() {
     }
 }
 
-void Catan::ChooseStartingPlayer() {
+std::string Catan::ChooseStartingPlayer() {
     std::cout << "Starting player: " << players[currentPlayerIndex]->getName() << std::endl;
+    return players[currentPlayerIndex]->getName();
 }
 
 Board& Catan::getBoard() {
     return board;
 }
 
-void Catan::printWinner() {
+bool Catan::printWinner() {
     Player* winner = nullptr;
     for (auto player : players) {
         if (player->getPoints() >= 10) {
             if (!winner || player->getPoints() > winner->getPoints()) {
                 winner = player;
+                break;
             }
         }
     }
     if (winner) {
         std::cout << "Winner: " << winner->getName() << std::endl;
+        return true;
     } else {
         std::cout << "No winner yet." << std::endl;
     }
+    return false;
 }
 
 std::string Catan::getDevelopmentCard() {
@@ -70,12 +74,10 @@ std::string Catan::getDevelopmentCard() {
 }
 
 
-bool Catan::Knight(std::string resource, int num, std::string player, bool boo) {
+bool Catan::Knight(std::string resource, int num, bool boo) {
     if (boo)
     {
         std::string resource;
-        std::string player;
-        std::cout << "you activated Knight choose where you put it." << std::endl;
         std::cout << "resource: " << std::endl;
         std::cin >> resource;
         std::cout << "resource number: " << std::endl;
@@ -87,18 +89,17 @@ bool Catan::Knight(std::string resource, int num, std::string player, bool boo) 
     if (iter == resourceTypes.end()) {
         std::cout << "resource doesn't exsist: bad syntx, try again" << std::endl;
         boo = true;
-        Knight(resource,num,player,boo);
+        Knight(resource,num,boo);
     }
 
     if (num < 2 || num > 12) {
         std::cout << "resource number doesn't exsist: bad syntx, try again" << std::endl;
         boo = true;
-        Knight(resource,num,player,boo);
+        Knight(resource,num,boo);
     }
 
-    boo = false;
     int chang = -1;
-    //set Hexes int back to positive number to cancel the Knight on them
+    //Set Knighted Hexes int BACK to positive number to cancel the Knight on them.
     for (auto& settlement : board.getSettlements()) {
         if (settlement.Hex1().second < 0)
         {
@@ -108,13 +109,13 @@ bool Catan::Knight(std::string resource, int num, std::string player, bool boo) 
         {
             settlement.setHex2Int(settlement.Hex1().second * chang);
         }
-        if (settlement.Hex3().second < 0)
+        if (settlement.Hex3().first != "NULL" && settlement.Hex3().second < 0)
         {
             settlement.setHex3Int(settlement.Hex1().second * chang);
         }
     }
 
-    //set Hexes int into to negative number to put the Knight on them
+    //Set Hexes int into to negative number to put the Knight on them.
     for (auto& settlement : board.getSettlements()) {
         if (settlement.Hex1().first == resource && settlement.Hex1().second == num)
         {
@@ -124,7 +125,7 @@ bool Catan::Knight(std::string resource, int num, std::string player, bool boo) 
         {
             settlement.setHex2Int(settlement.Hex1().second * chang);
         }
-        if (settlement.Hex3().first == resource && settlement.Hex3().second == num)
+        if (settlement.Hex3().first != "NULL" && settlement.Hex3().first == resource && settlement.Hex3().second == num)
         {
             settlement.setHex3Int(settlement.Hex1().second * chang);
         }

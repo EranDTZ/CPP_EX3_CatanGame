@@ -12,7 +12,8 @@ class Player {
     public:
         Player(const std::string& name);
         std::string getName() const;
-        void setTurn(bool turn) { isTurn = turn; }
+        bool isTurn() { return isturn; }
+        void setTurn();
         void rollDice(Catan& catan, Board& board);
         void endTurn();
         void trade(Player& other);
@@ -22,6 +23,11 @@ class Player {
         void bankTrade();
         void printPoints() const;
         int getPoints() const;
+        void setPoints(int more) { points += more; }
+        int getKnights() const;
+        bool getKnightKing() { return knightsKing; }
+        void setKnightKing(bool boo) { knightsKing = boo; }
+        void knightsCheck(Catan& catan);
         bool buySettelemnt();
         bool buyRoad();
         void placeSettelemnt(Board& board);
@@ -38,7 +44,9 @@ class Player {
     private:
         std::string name;
         int points;
-        bool isTurn;
+        bool isturn;
+        int knights;
+        bool knightsKing;
         std::vector<std::string> cards;
         std::vector<std::string> developmentCard;
         std::vector<Settlement> playerSettlements;

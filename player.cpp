@@ -11,12 +11,11 @@
 
 using namespace std;
 
-Player::Player(const std::string& name) : name(name), points(0), isTurn(false) , cards() {
+Player::Player(const std::string& name) : name(name), points(0), isturn(false), knights(0), knightsKing(false), cards(), developmentCard(), playerSettlements() {
         srand(time(0)); // Initialize random seed
         cards.clear();
+        developmentCard.clear();
         playerSettlements.clear();
-        // playerEdges.clear();
-
     }
 
     std::string Player::getName() const {
@@ -25,7 +24,7 @@ Player::Player(const std::string& name) : name(name), points(0), isTurn(false) ,
 
 
     void Player::rollDice(Catan& catan, Board& board) {
-        if (!isTurn) {
+        if (!isTurn()) {
             throw runtime_error(name + " tried to roll the dice but it's not their turn.");
         }
         int diceSum = 0;
@@ -40,90 +39,96 @@ Player::Player(const std::string& name) : name(name), points(0), isTurn(false) ,
 
         //If player rolled a 7 activate Knight 
         if (diceSum == 7) {
-            bool boo = true;
+            bool boo = false;
             int num = -1;
             std::string resource;
-            std::string player;
+
             std::cout << "Knight activated. Choose where to put it." << std::endl;
             std::cout << "Resource: " << std::endl;
             std::cin >> resource;
             std::cout << "Resource number: " << std::endl;
             std::cin >> num;
-            
-            //Chack if Player inserted a currect other player name if not insert agine.
-            while (boo)
+
+            std::string player;
+            std::vector<std::string> PlayersToSteal;
+            //activate Knight on Hexe.
+            boo = catan.Knight(resource, num, boo);
+            if (boo == true)
             {
-                std::cout << "Choose a player to steal from:" << std::endl;
-                std::cin >> player;
-
-                std::vector<std::string> catanPlayers;
-
+                //Chack if there is a player sitting on thet Hexe.
                 for (auto& other : catan.getPlayers()) {
                     if (other->getName() != name) {
-                        catanPlayers.push_back(other->getName());
-                    }
-                }
-                
-
-                auto iter = std::find(catanPlayers.begin(), catanPlayers.end(), player);
-                if (iter == catanPlayers.end()) {
-                    std::cout << "Player doesn't exist: bad syntax, try again" << std::endl;
-                    boo = true;
-                } 
-                else {
-                    boo = false;
-                }
-            }
-            
-            //Chack if resource is good & number is good & player is good & Knight is activated properly
-            if (catan.Knight(resource, num, player, boo)){
-                //Steal from choosen player
-                for (auto& other : catan.getPlayers()) {
-                    if (other->getName() == player) { 
-                        if(!other->Cards().empty()) {
-                            std::string card;
-                            // Get the first card
-                            card = other->Cards().front();
-                            // Remove the first card
-                            other->Cards().erase(other->Cards().begin());
-                            // Give card to current player
-                            cards.push_back(card);
+                        for (auto& settlement : other->PlayerSettlements()) {
+                            if ((settlement.Hex1().first == resource && settlement.Hex1().second == num) ||
+                                (settlement.Hex2().first == resource && settlement.Hex2().second == num) ||
+                                ((settlement.Hex3().first != "NULL") && (settlement.Hex3().first == resource) && (settlement.Hex3().second == num))) {
+                                PlayersToSteal.push_back(other->getName());
+                            }
                         } 
-                        else {
-                            std::cout << player << " pack is empty." << std::endl;
-                        }
-                        std::cout << "in here$$" << std::endl;
                     }
-                } 
+                }
+
+                if (!PlayersToSteal.empty()) {
+                    //Chack if Player inserted a currect other player name if not insert agine.
+                    while (1) {
+                        std::cout << "Choose a player to steal from:" << std::endl;
+                        std::cin >> player;
+                        
+                        auto iter = std::find(PlayersToSteal.begin(), PlayersToSteal.end(), player);
+                        if (iter == PlayersToSteal.end()) {
+                            std::cout << "Player doesn't exist: bad syntax, try again" << std::endl;
+                        } 
+                        else break;
+                    }
+
+                    //Steal from choosen player
+                    for (auto& other : catan.getPlayers()) {
+                        if (other->getName() == player) { 
+                            if(!other->Cards().empty()) {
+                                std::string card;
+                                // Get the first card
+                                card = other->cards.front();
+                                // Remove the first card
+                                other->cards.erase(other->cards.begin());
+                                // Give card to current player
+                                cards.push_back(card);
+                            } 
+                            else
+                                std::cout << player << " pack is empty." << std::endl;
+                        }
+                    } 
+                }
+                else std::cout << "No player is sitting on that Hexe, there is no one to steal from." << std::endl;
             }
+           //DONE! 
         }
-        
-        //For each player that have a settlements connected to that number give him the resource card 
-        for (auto& player : catan.getPlayers())
-        {
-            for (auto& settlements : player->PlayerSettlements())
+        else {
+            //For each player that have a settlements connected to that number give him the resource card 
+            for (const auto& player : catan.getPlayers())
             {
-                if (settlements.Hex1().second == diceSum)
+                for (auto& settlements : player->PlayerSettlements())
                 {
-                    player->Cards().push_back(settlements.Hex1().first);
+                    if (settlements.Hex1().second == diceSum)
+                    {
+                        player->cards.push_back(settlements.Hex1().first);
+                    }
+                    if (settlements.Hex2().second == diceSum)
+                    {
+                        player->cards.push_back(settlements.Hex2().first);
+                    }
+                    if (settlements.Hex3().first != "NULL" && settlements.Hex3().second == diceSum)
+                    {
+                        player->cards.push_back(settlements.Hex3().first);
+                    }
+                    
                 }
-                if (settlements.Hex2().second == diceSum)
-                {
-                    player->Cards().push_back(settlements.Hex2().first);
-                }
-                if (settlements.Hex3().second == diceSum)
-                {
-                    player->Cards().push_back(settlements.Hex3().first);
-                }
-                
+                player->printCards();
             }
-            
         }
-        
     }
 
     void Player::endTurn() {
-        isTurn = false;
+        isturn = false;
         cout << name << " ended their turn." << endl;
     }
 
@@ -146,11 +151,12 @@ Player::Player(const std::string& name) : name(name), points(0), isTurn(false) ,
         std::string give;
         std::string receive;
 
+        //Check if player have the cards to give
         for (size_t i = 0; i < giveAmount; i++) {
             std::cout << "give card "<< i << " :" ;
             std::cin >> give;
-            auto iter_currnt = std::find(cards.begin(), cards.end(), give);
-            if (iter_currnt != cards.end()) {
+            auto iter_currnt = std::find(Cards().begin(), Cards().end(), give);
+            if (iter_currnt != Cards().end()) {
                 std::cout << "cord doesn't exsist for trade." << std::endl;
                 return;
             }
@@ -158,26 +164,29 @@ Player::Player(const std::string& name) : name(name), points(0), isTurn(false) ,
             std::cout << std::endl;
         }
 
+        //Check if other have the cards to give
         for (size_t i = 0; i < receiveAmount; i++){
             std::cout << "receive card "<< i << " :" ;
             std::cin >> receive;
-            auto iter_other = std::find(other.cards.begin(), other.cards.end(), receive);
-            if (iter_other != cards.end()) {
+            auto iter_other = std::find(other.Cards().begin(), other.Cards().end(), receive);
+            if (iter_other != Cards().end()) {
                 std::cout << "cord doesn't exsist for trade." << std::endl;
                 return;
             }
             cardsToReceive.push_back(give);
             std::cout << std::endl;
         }
-
+        //Check uf other agree to the trade
         if (isTrade(other))
-        {
+        {   
+            //erase given cards from player and give to other
             for (const auto& card : cardsToGive) {
                 auto iter_currnt = std::find(cards.begin(), cards.end(), card);
                 cards.erase(iter_currnt);
                 other.cards.push_back(card);
                 
             }
+            //erase given cards from other and give receiveing cards to player
             for (const auto& card : cardsToReceive) {
                 auto iter_other = std::find(other.cards.begin(), other.cards.end(), card);
                 other.cards.erase(iter_other);
@@ -187,6 +196,8 @@ Player::Player(const std::string& name) : name(name), points(0), isTurn(false) ,
         std::cout << name << " trades " << giveAmount << " for" << receiveAmount << " with " << other.getName() << endl;
     }
 
+
+    //Help func for checking if other agree to the trade
     bool Player::isTrade(Player& other) {
         std::string ans = "NULL";
         std::cout << other.getName() << ", Write 'yes' if you approve the trade or 'no' if you do not approve." << std::endl;
@@ -198,18 +209,20 @@ Player::Player(const std::string& name) : name(name), points(0), isTurn(false) ,
         return false;
     }
 
+
     void Player::buyDevelopmentCard(Catan& catan) {
         bool allCardsFound = true;
         std::vector<std::string> cardsToCheck = {"Pasture", "Fields" ,"Mountains"};
-
+        //Check if player have the needed cards to buy
         for (const auto& card : cardsToCheck) {
             auto iter = std::find(cards.begin(), cards.end(), card);
             if (iter == cards.end()) {
+                std::cout << "You don`t have all the resources to buy the Development Card." << std::endl;
                 allCardsFound = false;
                 return;
             }
         }
-
+        //If player have the needed cards to buy, erase them & give the development Card th the player.
         for (const auto& card : cardsToCheck) {
             auto iter = std::find(cards.begin(), cards.end(), card);
             if (iter != cards.end()) {
@@ -223,7 +236,7 @@ Player::Player(const std::string& name) : name(name), points(0), isTurn(false) ,
 
     void Player::useDevelopmentCard(Catan& catan ,Board& board) {
         std::string card;
-        std::cout << name << ", enter which development card you want to use: " << endl;
+        std::cout << name << ", enter which development card you want to use: " << std::endl;
         std::cin >> card;
 
         auto iter = std::find(developmentCard.begin(), developmentCard.end(), card);
@@ -234,51 +247,72 @@ Player::Player(const std::string& name) : name(name), points(0), isTurn(false) ,
 
         if (card == "Knight")
         {
-            bool boo = true;
+            bool boo = false;
             int num = -1;
             std::string resource;
-            std::string player;
-            std::cout << "You activated Knight. Choose where to put it." << std::endl;
+
+            std::cout << "Knight activated. Choose where to put it." << std::endl;
             std::cout << "Resource: " << std::endl;
             std::cin >> resource;
             std::cout << "Resource number: " << std::endl;
             std::cin >> num;
-            
-            while (boo) {
-                std::cout << "Choose a player to steal from:" << std::endl;
-                std::cin >> player;
 
-                auto iter = std::find_if(catan.getPlayers().begin(), catan.getPlayers().end(), 
-                                        [&](Player* p) { return p->getName() == player; });
+            std::string player;
+            std::vector<std::string> PlayersToSteal;
 
-                if (iter == catan.getPlayers().end()) {
-                    std::cout << "Player doesn't exist: bad syntax, try again" << std::endl;
-                    boo = true;
-                } 
-                else {
-                    boo = false;
-                }
-            }
-            
-            if (catan.Knight(resource, num, player, boo)) {
-
+            boo = catan.Knight(resource, num, boo);
+            if (boo == true)
+            {
                 for (auto& other : catan.getPlayers()) {
-                    if (other->getName() == player) {
-                        if(!other->Cards().empty()) {
-                            std::string card;
-                            // Get the first card
-                            card = other->Cards().front();
-                            // Remove the first card
-                            other->Cards().erase(other->Cards().begin());
-                            // Give card to current player
-                            cards.push_back(card);
+                    if (other->getName() != name) {
+                        for (auto& settlement : other->PlayerSettlements()) {
+                            if ((settlement.Hex1().first == resource && settlement.Hex1().second == num) ||
+                                (settlement.Hex2().first == resource && settlement.Hex2().second == num) ||
+                                ((settlement.Hex3().first != "NULL") && (settlement.Hex3().first == resource) && (settlement.Hex3().second == num))) {
+                                PlayersToSteal.push_back(other->getName());
+                            }
                         } 
-                        else {
-                            std::cout << player << " pack is empty." << std::endl;
-                        }
                     }
-                } 
+                }
+
+                if (!PlayersToSteal.empty()) {
+                    //Chack if Player inserted a currect other player name if not insert agine.
+                    while (1) {
+                        std::cout << "Choose a player to steal from:" << std::endl;
+                        std::cin >> player;
+                        
+                        auto iter = std::find(PlayersToSteal.begin(), PlayersToSteal.end(), player);
+                        if (iter == PlayersToSteal.end()) {
+                            std::cout << "Player doesn't exist: bad syntax, try again" << std::endl;
+                        } 
+                        else break;
+                    }
+
+                    //Steal from choosen player
+                    for (auto& other : catan.getPlayers()) {
+                        if (other->getName() == player) { 
+                            if(!other->Cards().empty()) {
+                                std::string card;
+                                // Get the first card
+                                card = other->cards.front();
+                                // Remove the first card
+                                other->cards.erase(other->cards.begin());
+                                // Give card to current player
+                                cards.push_back(card);
+                            } 
+                            else
+                                std::cout << player << " pack is empty." << std::endl;
+                        }
+                    } 
+                }
+                else std::cout << "No player is sitting on that Hexe, there is no one to steal from." << std::endl;
             }
+            knights++;
+            if (knights > 3)
+            {
+                knightsCheck(catan);
+            }
+           //DONE! 
         }
 
         if (card == "Point")
@@ -355,9 +389,13 @@ Player::Player(const std::string& name) : name(name), points(0), isTurn(false) ,
         int four = 0;
         std::cout << "resource type to give (4) : " << std::endl;
         std::cin >> resource_give;
-        std::cout << "resource type to get : " << std::endl;
-        std::cin >> resource_get;
-        for (auto& card : cards) {
+        auto iter = std::find(resourceTypes.begin(), resourceTypes.end(), resource_give);
+        if (iter != resourceTypes.end()) {
+            std::cout << "resource doesn't exsist: bad syntx" << std::endl;
+            return;
+        }
+
+        for (auto& card : Cards()) {
             if (card == resource_give)
             {
                 four++;
@@ -367,11 +405,16 @@ Player::Player(const std::string& name) : name(name), points(0), isTurn(false) ,
                 break;
             }  
         }
-        auto iter = std::find(resourceTypes.begin(), resourceTypes.end(), resource_get);
+
+        std::cout << "resource type to get : " << std::endl;
+        std::cin >> resource_get;
+
+        iter = std::find(resourceTypes.begin(), resourceTypes.end(), resource_get);
         if (iter != resourceTypes.end()) {
             std::cout << "resource doesn't exsist: bad syntx" << std::endl;
             return;
         }
+
         for (size_t i = 0; i < four; i++)
         {
             iter = std::find(cards.begin(), cards.end(), resource_give);
@@ -386,8 +429,8 @@ Player::Player(const std::string& name) : name(name), points(0), isTurn(false) ,
         std::vector<std::string> cardsToCheck = {"Forest", "Hills", "Pasture", "Fields"};
 
         for (const auto& card : cardsToCheck) {
-            auto iter = std::find(cards.begin(), cards.end(), card);
-            if (iter == cards.end()) {
+            auto iter = std::find(Cards().begin(), Cards().end(), card);
+            if (iter == Cards().end()) {
                 allCardsFound = false;
                 return false;
             }
@@ -407,8 +450,8 @@ Player::Player(const std::string& name) : name(name), points(0), isTurn(false) ,
         std::vector<std::string> cardsToCheck = {"Forest", "Hills"};
 
         for (const auto& card : cardsToCheck) {
-            auto iter = std::find(cards.begin(), cards.end(), card);
-            if (iter == cards.end()) {
+            auto iter = std::find(Cards().begin(), Cards().end(), card);
+            if (iter == Cards().end()) {
                 allCardsFound = false;
                 return false;
             }
@@ -423,7 +466,7 @@ Player::Player(const std::string& name) : name(name), points(0), isTurn(false) ,
         return true;   
     }
 
-    void Player::placeSettelemnt(Board& board){
+    void Player::placeSettelemnt(Board& board) {
         const Settlement* v = new Settlement();
         int settlementId = -1;
         if (points == 0 || points == 1 || buySettelemnt()) {
@@ -587,6 +630,7 @@ void Player::placeTowRoads(Board& board) {
         }
     }
 
+
     void Player::printPoints() const {
         cout << name << " has " << points << " points." << endl;
     }
@@ -594,6 +638,34 @@ void Player::placeTowRoads(Board& board) {
     int Player::getPoints() const {
         return points;
     }
+
+    int Player::getKnights() const {
+        return knights;
+    }
+
+    void Player::knightsCheck(Catan& catan) {
+        int playerKnights = getKnights();
+        for (auto& other : catan.getPlayers()) {
+            if (other->getName() != name)
+            {
+                if (other->getKnights() > playerKnights)
+                {
+                    return;
+                }
+            }
+        }
+        for (auto& other : catan.getPlayers()) {
+            if (other->getName() != name && other->getKnightKing())
+            {
+                other->setPoints(-2);
+                other->setKnightKing(false);
+                break;
+            }
+        }
+        setKnightKing(true);
+        setPoints(2);
+    }
+
 
     void Player::printCards() {
         if (!Cards().empty()) {
@@ -633,3 +705,7 @@ void Player::placeTowRoads(Board& board) {
         printDevelopment();
         printCards();
     }
+
+    void Player::setTurn() {
+         isturn = true; 
+         }

@@ -12,7 +12,6 @@ Board::Board() {
     printBoard();
     ResourceGuide();
     Guide();
-    settlementGuide();
 }
 /*maybe it should be realized using a graph , 
 So every Node is a meeting of - 3 resourceTypes OR 2 resourceTypes and NULL,

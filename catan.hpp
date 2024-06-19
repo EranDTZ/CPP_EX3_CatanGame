@@ -10,12 +10,13 @@ public:
 
     Catan(Player& p1, Player& p2, Player& p3);
     void initializeDevelopmentCard();
-    void ChooseStartingPlayer();
+    std::string ChooseStartingPlayer();
     Board& getBoard();
-    void printWinner();
+    bool printWinner();
     std::vector<Player*> getPlayers() const { return players; } 
     std::string getDevelopmentCard();
-    bool Knight(std::string resource, int num, std::string player, bool boo);
+    bool Knight(std::string resource, int num, bool boo);
+    std::vector<std::string> getDevelopmentCards() { return DevelopmentCard; }
 
 private:
     Board board;
