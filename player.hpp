@@ -28,6 +28,10 @@ class Player {
         void placeRoad(Board& board, int settlementId);
         void placeRoad(Board& board);
         void placeTowRoads(Board& board);
+        void printCards();
+        void printSettlements();
+        void printDevelopment();
+        void myInfo();
         std::vector<Settlement> PlayerSettlements() const {return playerSettlements;}
         std::vector<std::string> Cards() {return cards;}
         std::vector<std::string> getDevelopment() {return developmentCard;}
@@ -38,7 +42,7 @@ class Player {
         std::vector<std::string> cards;
         std::vector<std::string> developmentCard;
         std::vector<Settlement> playerSettlements;
-        std::vector<Edge> playerEdges;
+        // std::vector<Edge> playerEdges;
     };
 
 #endif

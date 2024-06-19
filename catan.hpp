@@ -15,6 +15,7 @@ public:
     void printWinner();
     std::vector<Player*> getPlayers() const { return players; } 
     std::string getDevelopmentCard();
+    bool Knight(std::string resource, int num, std::string player, bool boo);
 
 private:
     Board board;

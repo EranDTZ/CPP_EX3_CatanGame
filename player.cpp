@@ -15,7 +15,7 @@ Player::Player(const std::string& name) : name(name), points(0), isTurn(false) ,
         srand(time(0)); // Initialize random seed
         cards.clear();
         playerSettlements.clear();
-        playerEdges.clear();
+        // playerEdges.clear();
 
     }
 
@@ -44,7 +44,7 @@ Player::Player(const std::string& name) : name(name), points(0), isTurn(false) ,
             int num = -1;
             std::string resource;
             std::string player;
-            std::cout << "You activated Knight. Choose where to put it." << std::endl;
+            std::cout << "Knight activated. Choose where to put it." << std::endl;
             std::cout << "Resource: " << std::endl;
             std::cin >> resource;
             std::cout << "Resource number: " << std::endl;
@@ -56,18 +56,27 @@ Player::Player(const std::string& name) : name(name), points(0), isTurn(false) ,
                 std::cout << "Choose a player to steal from:" << std::endl;
                 std::cin >> player;
 
-                auto iter = std::find_if(catan.getPlayers().begin(), catan.getPlayers().end(), 
-                                        [&](Player* p) { return p->getName() == player; });
-                if (iter == catan.getPlayers().end()) {
+                std::vector<std::string> catanPlayers;
+
+                for (auto& other : catan.getPlayers()) {
+                    if (other->getName() != name) {
+                        catanPlayers.push_back(other->getName());
+                    }
+                }
+                
+
+                auto iter = std::find(catanPlayers.begin(), catanPlayers.end(), player);
+                if (iter == catanPlayers.end()) {
                     std::cout << "Player doesn't exist: bad syntax, try again" << std::endl;
                     boo = true;
-                } else {
+                } 
+                else {
                     boo = false;
                 }
             }
             
             //Chack if resource is good & number is good & player is good & Knight is activated properly
-            if (board.Knight(resource, num, player, boo)){
+            if (catan.Knight(resource, num, player, boo)){
                 //Steal from choosen player
                 for (auto& other : catan.getPlayers()) {
                     if (other->getName() == player) { 
@@ -83,6 +92,7 @@ Player::Player(const std::string& name) : name(name), points(0), isTurn(false) ,
                         else {
                             std::cout << player << " pack is empty." << std::endl;
                         }
+                        std::cout << "in here$$" << std::endl;
                     }
                 } 
             }
@@ -250,7 +260,7 @@ Player::Player(const std::string& name) : name(name), points(0), isTurn(false) ,
                 }
             }
             
-            if (board.Knight(resource, num, player, boo)) {
+            if (catan.Knight(resource, num, player, boo)) {
 
                 for (auto& other : catan.getPlayers()) {
                     if (other->getName() == player) {
@@ -416,10 +426,9 @@ Player::Player(const std::string& name) : name(name), points(0), isTurn(false) ,
     void Player::placeSettelemnt(Board& board){
         const Settlement* v = new Settlement();
         int settlementId = -1;
-        if (points == 0 || points == 1 || buySettelemnt())
-        {
+        if (points == 0 || points == 1 || buySettelemnt()) {
             if (points == 0)
-            std::cout << "A settlement is an intersection of 2 OR 3 resources! Choose Wisely\n";
+                std::cout << "A settlement is an intersection of 2 OR 3 resources! Choose Wisely\n";
 
             std::cout << name << ", choose a place for your settlement by inserting the settlementId: ";
             std::cin >> settlementId;
@@ -428,13 +437,12 @@ Player::Player(const std::string& name) : name(name), points(0), isTurn(false) ,
                 v = board.isPlaceAvailable_byID(settlementId,name);
             }
             else {
-                std::cout << "settlement ID is incorrect!\n";
-                return;
+                std::cout << "settlement ID is incorrect! try again\n";
+                placeSettelemnt(board);
             }
             if (v != nullptr) {
                 //Chack if it is the first or the second Settlement.
-                if (points == 0 || points == 1)
-                {
+                if (points == 0 || points == 1) {
                     if (points == 1)
                     {
                         cards.push_back(v->Hex1().first);
@@ -446,56 +454,58 @@ Player::Player(const std::string& name) : name(name), points(0), isTurn(false) ,
                         }
                     }
                     playerSettlements.push_back(*v);
+                    //If first or the second Settlement, let the player choose a Road also.
+                    placeRoad(board,settlementId);
+                    points++;
+                    return;
+
                 }
                 //Check if a player have a phth to the settlement befor letting him take it.
                 else if (board.findEdgeToV(v,name))
                 {
                     playerSettlements.push_back(*v);
+                    points++;
+                    return;
                 }
             }
             else {
+                placeSettelemnt(board);
                 cards.push_back("Forest");
                 cards.push_back("Hills");
                 cards.push_back("Pasture");
                 cards.push_back("Fields");
-                // std::cout << "You don't have all tha resourceTypes in your cards" << std::endl;
-                // throw std::runtime_error("Place already occupied.");
             } 
-            //If first or the second Settlement, let the player choose a Road also.
-            if (points == 0 || points == 1)
-            {
-                int id = v->SettlementId();
-                placeRoad(board,id);
-            }
-            points++;
-            return;
         }
-        
         else std::cout << "You don't have all tha resourceTypes in your cards" << std::endl;
     }
 
     void Player::placeRoad(Board& board, int settlementId) {
         int toSettlementId;
         bool isRoad = false;
+        if (points == 0) 
+            std::cout << "A road is an edge betwin 1 OR 2 settlement! Choose Wisely\n";
+
         std::cout << name << ", choose the settlement ID that the road leads to: ";
         std::cin >> toSettlementId;
         for (auto& place : playerSettlements) {
             if (place.SettlementId() == settlementId) {
                 isRoad = board.isRoadAvailable(&place,toSettlementId,name);
-                if (isRoad == true)
-                {
+                if (isRoad == true) {
                     cout << name << " placed a road from settlement " << place.SettlementId() << " to settlement " << toSettlementId << std::endl;
+                    return;
                 }
                 break;
             }
-            if (isRoad == true)
-            {
+            if (isRoad == true) {
                 break;
             } 
         }
         if (isRoad == false)
         {
-            std::cout << "Sorry you can`t place a Road here." << std::endl;
+            std::cout << "You are trying to place a Road from settlement " << settlementId << std::endl;
+            std::cout << "Here are a board guide so you can see your options: " << std::endl;
+            board.Guide();
+            placeRoad(board,settlementId);
         }
         return;
     }
@@ -505,9 +515,7 @@ Player::Player(const std::string& name) : name(name), points(0), isTurn(false) ,
         int toSettlementId;
         bool isRoad = false;
 
-        if (points == 0 || points == 1 || buyRoad()) {
-
-            std::cout << "A road is an edge betwin 1 OR 2 settlement! Choose Wisely\n";
+        if (buyRoad()) {
             std::cout << name << ", choose a place for your Road by inserting the settlement ID (from your settlements),\nand the settlement ID that the road leads to : ";
             for (size_t i = 0; i < 2; i++) {
                 std::cout << "my Settlement ID " << i << ": "<< std::endl;
@@ -531,11 +539,11 @@ Player::Player(const std::string& name) : name(name), points(0), isTurn(false) ,
             }
             if (isRoad == false)
             {
-                std::cout << "Sorry you can`t place a Road here, the Rode is block." << std::endl;
-                cards.push_back("Forest");
-                cards.push_back("Hills");
-            }
-            /*?? chack if done  ??*/            
+                std::cout << "You are trying to place a Road from settlement " << mySettlementId << std::endl;
+                std::cout << "Here are a board guide so you can see your options: " << std::endl;
+                board.Guide();
+                placeRoad(board,mySettlementId);
+            } 
         }
     }
 
@@ -546,7 +554,9 @@ void Player::placeTowRoads(Board& board) {
         bool isRoad = false;
         for (size_t i = 0; i < 2; i++)
         {
-            std::cout << "A road is an edge betwin 1 OR 2 settlement! Choose Wisely\n";
+            if (points == 0) 
+                std::cout << "A road is an edge betwin 1 OR 2 settlement! Choose Wisely\n";
+
             std::cout << name << ", choose a place for your Road by inserting the settlement ID (from your settlements),\nand the settlement ID that the road leads to : ";
             for (size_t i = 0; i < 2; i++) {
                 std::cout << "my Settlement ID " << i << ": "<< std::endl;
@@ -570,9 +580,9 @@ void Player::placeTowRoads(Board& board) {
             }
             if (isRoad == false)
             {
-                std::cout << "Sorry you can`t place a Road here, the Rode is block." << std::endl;
-                cards.push_back("Forest");
-                cards.push_back("Hills");
+                std::cout << "try again using this board guide." << std::endl;
+                board.Guide();
+                placeTowRoads(board);
             }
         }
     }
@@ -583,4 +593,43 @@ void Player::placeTowRoads(Board& board) {
 
     int Player::getPoints() const {
         return points;
+    }
+
+    void Player::printCards() {
+        if (!Cards().empty()) {
+            std::cout << "You have " << Cards().size() << " cards" << std::endl;  
+            std::cout << "Your cards:" << std::endl;  
+            for (auto& card : Cards()) {
+                std::cout << card << ", ";
+            }
+            std::cout << "." << std::endl;  
+        }
+        std::cout << "You dont have any cards ):" << std::endl;  
+    }
+
+    void Player::printSettlements() {
+            std::cout << "You have " << PlayerSettlements().size() << " Settlements" << std::endl;  
+            std::cout << "Your Settlements:" << std::endl;  
+            for (auto& settlement : PlayerSettlements()) {
+                std::cout << settlement.SettlementId() << ", ";
+            }
+            std::cout << "." << std::endl;  
+    }
+
+    void Player::printDevelopment() {
+        if (!getDevelopment().empty()) {
+            std::cout << "You have " << getDevelopment().size() << " development cards" << std::endl;  
+            std::cout << "Your development cards:" << std::endl;  
+            for (auto& development : getDevelopment()) {
+                std::cout << development << ", ";
+            }
+            std::cout << "." << std::endl;  
+        }
+        std::cout << "You dont have any development cards ):" << std::endl;  
+    }
+
+    void Player::myInfo() {
+        printSettlements();
+        printDevelopment();
+        printCards();
     }

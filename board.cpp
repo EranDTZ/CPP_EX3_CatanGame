@@ -9,9 +9,10 @@
 Board::Board() {
     initializeBoard();
     initializeEdges();
-    ResourceGuide();
     printBoard();
-    BoardGuide();
+    ResourceGuide();
+    Guide();
+    settlementGuide();
 }
 /*maybe it should be realized using a graph , 
 So every Node is a meeting of - 3 resourceTypes OR 2 resourceTypes and NULL,
@@ -282,7 +283,7 @@ void Board::ResourceGuide() {
 }
 
 /*printBoardGuide*/
-void Board::BoardGuide() const {
+void Board::settlementGuide() {
     // Map resource types to ANSI color codes
     std::map<std::string, std::string> colorStringM = {
     {"Forest", "\033[0;32mForest\033[0m"},        // Green text
@@ -295,20 +296,23 @@ void Board::BoardGuide() const {
 };
     
 
-    for (const auto& settlement : settlements) {
-        std::cout << "settlement " << settlement.SettlementId() << ": <" << colorStringM[settlement.Hex1().first] << "," << settlement.Hex1().second << ">";
-        if (settlement.Hex3().first != "NULL")
+    for (auto& settlement : settlements) {
+        //If settlement ISN`T Occupied print it.
+        if (!settlement.isOccupied() && findEdgeFromU(&settlement))
         {
-            std::cout << ", " <<  ": <" << colorStringM[settlement.Hex2().first] << "," << settlement.Hex2().second << ">";
-            std::cout << ", " <<  ": <" << colorStringM[settlement.Hex3().first] << "," << settlement.Hex3().second << ">" << std::endl;
+            std::cout << "settlement " << settlement.SettlementId() << ": <" << colorStringM[settlement.Hex1().first] << "," << settlement.Hex1().second << ">";
+            if (settlement.Hex3().first != "NULL")
+            {
+                std::cout << ", " <<  ": <" << colorStringM[settlement.Hex2().first] << "," << settlement.Hex2().second << ">";
+                std::cout << ", " <<  ": <" << colorStringM[settlement.Hex3().first] << "," << settlement.Hex3().second << ">" << std::endl;
+            }
+            else std::cout << ", " <<  ": <" << colorStringM[settlement.Hex2().first] << "," << settlement.Hex2().second << ">"<< std::endl; 
         }
-        else std::cout << ", " <<  ": <" << colorStringM[settlement.Hex2().first] << "," << settlement.Hex2().second << ">"<< std::endl; 
     }
    
 }
 
-
-void Board::settlementGuide() { 
+void Board::helprint(int from, int to) {
     // Map resource types to ANSI color codes
     std::map<std::string, std::string> colorMap = {
         {"Forest", "\033[0;32m⬢ \033[0m"},        // Green hexagon
@@ -320,43 +324,75 @@ void Board::settlementGuide() {
         {"default", "\033[0m⬢ \033[0m"}         // Default hexagon
     };
 
-    // Print the board with colored dots
+    // blue hexagon
+    std::map<int, std::string> b = {
+        {1, "\033[36m1\033[0m"}, {6, "\033[36m6\033[0m"}, {11, "\033[36m11\033[0m"}, {15, "\033[36m15\033[0m"},
+        {2, "\033[36m2\033[0m"}, {7, "\033[36m7\033[0m"}, {12, "\033[36m12\033[0m"}, {16, "\033[36m16\033[0m"},
+        {3, "\033[36m3\033[0m"}, {8, "\033[36m8\033[0m"}, {13, "\033[36m13\033[0m"}, {17, "\033[36m17\033[0m"},
+        {4, "\033[36m4\033[0m"}, {9, "\033[36m9\033[0m"}, {14, "\033[36m14\033[0m"}, {18, "\033[36m18\033[0m"},
+        {5, "\033[36m5\033[0m"}, {10, "\033[36m10\033[0m"}
+    };
+
+    for (int i = from; i < (to+1) ; i++)
+    {
+        if (i == 0 || i == 16)
+        {
+            std::cout << "       ";
+        }
+        if (i == 3 || i == 12)
+        {
+            std::cout << "    ";
+        }
+        if (i == 7)
+        {
+            std::cout << "";
+        }
+        if (hexes[i].second < 10)
+        {
+            std::cout << "| " << colorMap[hexes[i].first] << b[hexes[i].second] << " ";
+        }
+        else {
+            std::cout << "|" << colorMap[hexes[i].first] << b[hexes[i].second] << " ";
+        }
+    }
+    std::cout << "| " << std::endl;
+}
+
+
+void Board::Guide() { 
     std::cout << "Board Layout:" << std::endl;
     
     std::cout << "         / \\ 1 / \\ 2 / \\" << std::endl;
     std::cout << "        /   \\ /   \\ /   \\" << std::endl;
-
-    std::cout << "       |     |     |     | " << std::endl;
-    
+    helprint(0,2);
     std::cout << "       3     4     5     6 " << std::endl;
 
     std::cout << "      / \\   / \\   / \\   / \\" << std::endl;
     std::cout << "     /   \\ /   \\ /   \\ /   \\" << std::endl;
 
     std::cout << "          7     8     9      " << std::endl;
-    std::cout << "    |     |     |     |     |" << std::endl;
+    helprint(3,6);
     std::cout << "   10    11    12    13    14" << std::endl;
 
     std::cout << "   / \\   / \\   / \\   / \\   / \\" << std::endl;
     std::cout << "  /   \\ /   \\ /   \\ /   \\ /   \\" << std::endl;
 
     std::cout << "      15    16    17    18      " << std::endl;
-    std::cout << " |     |     |     |     |     |" << std::endl;
+    helprint(7,11);
     std::cout << "      19    20    21    22      " << std::endl;
     
     std::cout << "  \\   / \\   / \\   / \\   / \\   /" << std::endl;
     std::cout << "   \\ /   \\ /   \\ /   \\ /   \\ /" << std::endl;
 
     std::cout << "   23    24    25    26    27" << std::endl;
-    std::cout << "    |     |     |     |     |" << std::endl;
+    helprint(12,15);
     std::cout << "         28    29    30      " << std::endl;
     
     std::cout << "     \\   / \\   / \\   / \\   /" << std::endl;
     std::cout << "      \\ /   \\ /   \\ /   \\ /" << std::endl;
 
     std::cout << "      31    32    33    34" << std::endl;
-    std::cout << "       |     |     |     |" << std::endl;
-    
+    helprint(16,18);
     std::cout << "       \\    / \\   / \\   /" << std::endl;
     std::cout << "        \\  /35 \\ / 36\\ /" << std::endl;
    
@@ -367,7 +403,7 @@ Settlement* Board::isPlaceAvailable_byID(int settlementId, std::string& playerId
     for (auto& settlement : settlements) {
         if (settlement.SettlementId() == settlementId) {
             //If settlement isn`t occupied && there is no occupied settlement one road away
-            if (!settlement.isOccupied() && findEdgeFromU(&settlement,playerId)){
+            if (!settlement.isOccupied() && findEdgeFromU(&settlement)){
                 settlement.setOccupied(true);
                 settlement.setPlayerId(playerId);    
                 return &settlement;
@@ -375,14 +411,14 @@ Settlement* Board::isPlaceAvailable_byID(int settlementId, std::string& playerId
             else {
                 std::cout << "Settlement is is occupied by " << settlement.PlayerId() << std::endl;
                 std::cout << "Select a settlement from the list of unOccupied settlements:" << std::endl;
-                BoardGuide();
+                settlementGuide();
                 return nullptr;
             }
         }
     }
     std::cout << "There is no such settlement in the board!" << std::endl;
     std::cout << "Select a settlement from the list of unOccupied settlements:" << std::endl;
-    BoardGuide();
+    settlementGuide();
     return nullptr;
 }
 
@@ -405,7 +441,6 @@ bool Board::isRoadAvailable(const Settlement* u, int toSettlementId, std::string
 
                 if (edge.Road1()->PlayerId() == "NULL") {
                     edge.Road1()->setPlayerId(playerId);
-                    std::cout << std::endl << edge.Road1()->PlayerId() << std::endl;
                     return true;
                 }
                 else if (edge.Road2() != nullptr && edge.Road2()->PlayerId() == "NULL") {
@@ -438,10 +473,10 @@ const Edge* Board::findEdgeByUV(const Settlement* u, const Settlement* v, std::s
     return nullptr;
 }
 
-bool Board::findEdgeFromU(const Settlement* u, std::string& playerId) {
+bool Board::findEdgeFromU(const Settlement* u) {
     if (u != nullptr){
         for (const auto& edge : edges) {
-            if (edge.Settlement1() == u && edge.Settlement2()->PlayerId() != "NULL"){
+            if (edge.Settlement1() == u && edge.Settlement2()->PlayerId() != "NULL" || edge.Settlement2() == u && edge.Settlement1()->PlayerId() != "NULL"){
                 return false;
             }
         }
@@ -485,64 +520,3 @@ bool Board::findEdgeToV(const Settlement* v, std::string& playerId) const {
 }
 
 
-bool Board::Knight(std::string resource, int num, std::string player, bool boo) {
-    if (boo)
-    {
-        std::string resource;
-        std::string player;
-        std::cout << "you activated Knight choose where you put it." << std::endl;
-        std::cout << "resource: " << std::endl;
-        std::cin >> resource;
-        std::cout << "resource number: " << std::endl;
-        std::cin >> num;
-    }
-    
-    std::vector<std::string> resourceTypes = {"Forest", "Hills", "Pasture", "Fields", "Mountains"};
-    auto iter = std::find(resourceTypes.begin(), resourceTypes.end(), resource);
-    if (iter != resourceTypes.end()) {
-        std::cout << "resource doesn't exsist: bad syntx, try again" << std::endl;
-        boo = true;
-        Knight(resource,num,player,boo);
-    }
-
-    if (num < 2 || num > 12) {
-        std::cout << "resource number doesn't exsist: bad syntx, try again" << std::endl;
-        boo = true;
-        Knight(resource,num,player,boo);
-    }
-
-    boo = false;
-    int chang = -1;
-    //set Hexes int back to positive number to cancel the Knight on them
-    for (auto& settlement : settlements) {
-        if (settlement.Hex1().second < 0)
-        {
-            settlement.setHex1Int(settlement.Hex1().second * chang);
-        }
-        if (settlement.Hex2().second < 0)
-        {
-            settlement.setHex2Int(settlement.Hex1().second * chang);
-        }
-        if (settlement.Hex3().second < 0)
-        {
-            settlement.setHex3Int(settlement.Hex1().second * chang);
-        }
-    }
-
-    //set Hexes int into to negative number to put the Knight on them
-    for (auto& settlement : settlements) {
-        if (settlement.Hex1().first == resource && settlement.Hex1().second == num)
-        {
-            settlement.setHex1Int(settlement.Hex1().second * chang);
-        }
-        if (settlement.Hex2().first == resource && settlement.Hex2().second == num)
-        {
-            settlement.setHex2Int(settlement.Hex1().second * chang);
-        }
-        if (settlement.Hex3().first == resource && settlement.Hex3().second == num)
-        {
-            settlement.setHex3Int(settlement.Hex1().second * chang);
-        }
-    }
-    return true;
-}

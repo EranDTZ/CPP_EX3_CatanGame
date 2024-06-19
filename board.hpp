@@ -116,17 +116,21 @@ public:
     void printBoard();
     void printEdges();
     void ResourceGuide();
-    void BoardGuide() const;
     void settlementGuide();
+    void helprint(int from, int to);
+    void Guide();
     // Settlement* is3PlaceAvailable(const std::pair<std::string, int> hex1, const std::pair<std::string, int> hex2, const std::pair<std::string, int> hex3, std::string& playerId);
     // Settlement* is2PlaceAvailable(const std::pair<std::string, int> hex1, const std::pair<std::string, int> hex2, std::string& playerId);
     const Settlement* findSettlementById(int settlementId);
     Settlement* isPlaceAvailable_byID(int settlementId, std::string& playerId);
     bool isRoadAvailable(const Settlement* u, int settlementId, std::string& playerId);
     const Edge* findEdgeByUV(const Settlement* u, const Settlement* v, std::string& playerId);
-    bool findEdgeFromU(const Settlement* u, std::string& playerId);
+    bool findEdgeFromU(const Settlement* u);
     bool findEdgeToV(const Settlement* v, std::string& playerId) const;
     bool Knight(std::string resource, int num, std::string player, bool boo);
+    std::vector<std::pair<std::string, int>> getHexes() const { return hexes; }
+    std::vector<Settlement> getSettlements() const { return settlements; }
+    std::vector<Edge> getEdges() const { return edges; }
 private:
     std::vector<std::pair<std::string, int>> hexes;
     std::vector<Settlement> settlements;

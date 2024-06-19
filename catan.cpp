@@ -68,3 +68,67 @@ std::string Catan::getDevelopmentCard() {
     }
     return card;
 }
+
+
+bool Catan::Knight(std::string resource, int num, std::string player, bool boo) {
+    if (boo)
+    {
+        std::string resource;
+        std::string player;
+        std::cout << "you activated Knight choose where you put it." << std::endl;
+        std::cout << "resource: " << std::endl;
+        std::cin >> resource;
+        std::cout << "resource number: " << std::endl;
+        std::cin >> num;
+    }
+    
+    std::vector<std::string> resourceTypes = {"Forest", "Hills", "Pasture", "Fields", "Mountains"};
+    auto iter = std::find(resourceTypes.begin(), resourceTypes.end(), resource);
+    if (iter == resourceTypes.end()) {
+        std::cout << "resource doesn't exsist: bad syntx, try again" << std::endl;
+        boo = true;
+        Knight(resource,num,player,boo);
+    }
+
+    if (num < 2 || num > 12) {
+        std::cout << "resource number doesn't exsist: bad syntx, try again" << std::endl;
+        boo = true;
+        Knight(resource,num,player,boo);
+    }
+
+    boo = false;
+    int chang = -1;
+    //set Hexes int back to positive number to cancel the Knight on them
+    for (auto& settlement : board.getSettlements()) {
+        if (settlement.Hex1().second < 0)
+        {
+            settlement.setHex1Int(settlement.Hex1().second * chang);
+        }
+        if (settlement.Hex2().second < 0)
+        {
+            settlement.setHex2Int(settlement.Hex1().second * chang);
+        }
+        if (settlement.Hex3().second < 0)
+        {
+            settlement.setHex3Int(settlement.Hex1().second * chang);
+        }
+    }
+
+    //set Hexes int into to negative number to put the Knight on them
+    for (auto& settlement : board.getSettlements()) {
+        if (settlement.Hex1().first == resource && settlement.Hex1().second == num)
+        {
+            settlement.setHex1Int(settlement.Hex1().second * chang);
+        }
+        if (settlement.Hex2().first == resource && settlement.Hex2().second == num)
+        {
+            settlement.setHex2Int(settlement.Hex1().second * chang);
+        }
+        if (settlement.Hex3().first == resource && settlement.Hex3().second == num)
+        {
+            settlement.setHex3Int(settlement.Hex1().second * chang);
+        }
+    }
+    return true;
+}
+

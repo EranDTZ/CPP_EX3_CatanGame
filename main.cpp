@@ -23,16 +23,19 @@ int main() {
     
     p1.setTurn(true);
     p1.rollDice(catan,board);
-    
-    for (auto& card : p1.Cards())
-    {
-      std::cout << card << std::endl;  
-    }
 
-    for (auto& Settlements : p1.PlayerSettlements())
-    {
-      std::cout << Settlements.SettlementId() << std::endl;  
-    }
+    p2.setTurn(true);
+    p2.rollDice(catan,board);
+
+    p3.setTurn(true);
+    p3.rollDice(catan,board);
+
+    p1.setTurn(true);
+    p1.rollDice(catan,board);
+    
+    p1.myInfo();
+    p2.myInfo();
+    p3.myInfo();
     
 
     // p1.placeSettelemnt(board);
