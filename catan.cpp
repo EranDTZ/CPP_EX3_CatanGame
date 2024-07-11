@@ -52,11 +52,11 @@ bool Catan::printWinner() {
     }
     if (winner) {
         std::cout << "Winner: " << winner->getName() << std::endl;
-        return true;
+        return false;
     } else {
         std::cout << "No winner yet." << std::endl;
     }
-    return false;
+    return true;
 }
 
 std::string Catan::getDevelopmentCard() {
@@ -77,11 +77,10 @@ std::string Catan::getDevelopmentCard() {
 bool Catan::Knight(std::string resource, int num, bool boo) {
     if (boo)
     {
-        std::string resource;
-        std::cout << "resource: " << std::endl;
-        std::cin >> resource;
         std::cout << "resource number: " << std::endl;
         std::cin >> num;
+        std::cout << "resource: " << std::endl;
+        std::cin >> resource;
     }
     
     std::vector<std::string> resourceTypes = {"Forest", "Hills", "Pasture", "Fields", "Mountains"};

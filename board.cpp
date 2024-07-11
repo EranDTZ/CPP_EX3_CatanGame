@@ -126,11 +126,11 @@ void Board::initializeEdges() {
     };
 
     std::vector<std::pair<int, int>> towRoad = {
-        {1, 2} ,{35, 36}
+        {1, 2} ,{35, 36} ,{3,10} ,{6,14} ,{3,10} ,{23,31} ,{27,34}
     };
 
     std::vector<std::pair<int, int>> threeRoad = {
-        {1, 3} ,{2, 6} , {3, 10} ,{6, 14} , {10, 23} ,{14, 27} , {23, 31} ,{27, 34} , {31, 35} ,{34, 36}
+        {1, 3} ,{2, 6} ,{10, 23} ,{14, 27} ,{31, 35} ,{34, 36}
     };
 
     Settlement* settlement1 = new Settlement();
@@ -408,7 +408,7 @@ Settlement* Board::isPlaceAvailable_byID(int settlementId, std::string& playerId
                 return &settlement;
             }
             else {
-                std::cout << "Settlement is is occupied by " << settlement.PlayerId() << std::endl;
+                std::cout << "Settlement is occupied by " << settlement.PlayerId() << std::endl;
                 std::cout << "Select a settlement from the list of unOccupied settlements:" << std::endl;
                 settlementGuide();
                 return nullptr;
@@ -435,7 +435,7 @@ bool Board::isRoadAvailable(const Settlement* u, int toSettlementId, std::string
     const Settlement* v = findSettlementById(toSettlementId);
     if (u != nullptr && v != nullptr){
         for (auto& edge : edges) {
-            if (edge.Settlement1()->SettlementId() == u->SettlementId() && edge.Settlement2()->SettlementId() == v->SettlementId()
+            if (edge.Settlement1()->SettlementId() == u->SettlementId() && edge.Settlement2()->SettlementId() == v->SettlementId() 
             || edge.Settlement1()->SettlementId() == v->SettlementId() && edge.Settlement2()->SettlementId() == u->SettlementId()) {
 
                 if (edge.Road1()->PlayerId() == "NULL") {
@@ -461,6 +461,60 @@ bool Board::isRoadAvailable(const Settlement* u, int toSettlementId, std::string
     return false;
 }
 
+bool Board::isRoad(int settlementId, int toSettlementId, std::string& playerId, std::vector<Settlement> playerSettlements) {
+    const Settlement* u = findSettlementById(settlementId);
+    for (auto& edge : edges)
+    {
+        for (auto& settlement : playerSettlements)
+        {
+            if (edge.Settlement1() == u && edge.Settlement2()->SettlementId() == settlement.SettlementId() || edge.Settlement1()->SettlementId() == settlement.SettlementId() && edge.Settlement2() == u)
+            {
+                if (edge.Road1()->PlayerId() == playerId)
+                {
+                    break;
+                }
+                else if (edge.Road2() != nullptr && edge.Road2()->PlayerId() == playerId)
+                {
+                    break;
+                }
+                else if (edge.Road3() != nullptr && edge.Road3()->PlayerId() == playerId)
+                {
+                    break;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+    }
+    const Settlement* v = findSettlementById(toSettlementId);
+    for (auto& edge : edges)
+    {
+        if (edge.Settlement1() == u && edge.Settlement2() == v || edge.Settlement1() == v && edge.Settlement2() == u)
+        {
+            if (edge.Road1()->PlayerId() == "NULL") {
+                edge.Road1()->setPlayerId(playerId);
+                return true;
+            }
+            else if (edge.Road2() != nullptr && edge.Road2()->PlayerId() == "NULL") {
+                edge.Road2()->setPlayerId(playerId);
+                return true;
+            }
+            else if (edge.Road3() != nullptr && edge.Road3()->PlayerId() == "NULL") {
+                edge.Road3()->setPlayerId(playerId);
+                return true;
+            }
+            else {
+                std::cout << "This Edge is full, it can`t hold anymore Roads!" << std::endl;
+                return false;
+            }
+        }
+    }
+    std::cout << "There is no Edge on the board!" << std::endl;
+    return false;
+}
+
 const Edge* Board::findEdgeByUV(const Settlement* u, const Settlement* v, std::string& playerId) {
     if (u != nullptr && v != nullptr){
         for (const auto& edge : edges) {
@@ -475,7 +529,8 @@ const Edge* Board::findEdgeByUV(const Settlement* u, const Settlement* v, std::s
 bool Board::findEdgeFromU(const Settlement* u) {
     if (u != nullptr){
         for (const auto& edge : edges) {
-            if (edge.Settlement1() == u && edge.Settlement2()->PlayerId() != "NULL" || edge.Settlement2() == u && edge.Settlement1()->PlayerId() != "NULL"){
+            if (edge.Settlement1()->SettlementId() == u->SettlementId() && (edge.Road2() == nullptr && edge.Road3() == nullptr) && edge.Settlement2()->PlayerId() != "NULL" 
+             || edge.Settlement2()->SettlementId() == u->SettlementId() && (edge.Road2() == nullptr && edge.Road3() == nullptr) && edge.Settlement1()->PlayerId() != "NULL"){
                 return false;
             }
         }
@@ -486,13 +541,24 @@ bool Board::findEdgeFromU(const Settlement* u) {
 bool Board::findEdgeToV(const Settlement* v, std::string& playerId) const {
     if (v != nullptr){
         for (const auto& edge : edges) {
-            if (edge.Settlement1() == v || edge.Settlement2() == v){
+            if (edge.Settlement1()->SettlementId() == v->SettlementId() 
+            || edge.Settlement2()->SettlementId() == v->SettlementId()){
                 //If Edge is with one Road
-                if (edge.Road1() != nullptr && edge.Road2() == nullptr && edge.Road3() == nullptr)
+                if (edge.Road1()->PlayerId() == playerId && edge.Road2() == nullptr && edge.Road3() == nullptr)
                 {
-                    if (edge.Road1()->PlayerId() == playerId)
+                    if (edge.Settlement1() == v)
                     {
-                        return true;
+                        if (is2road(edge.Settlement2(),playerId))
+                        {
+                            return true;
+                        }
+                    }
+                    else
+                    {
+                        if (is2road(edge.Settlement1(),playerId))
+                        {
+                            return true;
+                        }
                     }
                 }
                 //If Edge is with tow Road
@@ -518,4 +584,43 @@ bool Board::findEdgeToV(const Settlement* v, std::string& playerId) const {
     return false;
 }
 
+bool Board::is2road(const Settlement* s, std::string& playerId) const {
+    for (const auto& edge : edges) {
+        if (edge.Settlement1()->SettlementId() == s->SettlementId() 
+        || edge.Settlement2()->SettlementId() == s->SettlementId())
+        {
+            if (edge.Road1()->PlayerId() == playerId && edge.Road2() == nullptr && edge.Road3() == nullptr)
+            {
+                return true;
+            }
+            //If Edge is with tow Road
+            if (edge.Road1() != nullptr && edge.Road2() != nullptr && edge.Road3() == nullptr)
+            {
+                if (edge.Road1()->PlayerId() == playerId && edge.Road2()->PlayerId() == playerId)
+                {
+                    return true;
+                }
+            }
+            //If Edge is with tow Road
+            if (edge.Road1() != nullptr && edge.Road2() != nullptr && edge.Road3() != nullptr)
+            {
+                if (edge.Road1()->PlayerId() == playerId && edge.Road2()->PlayerId() == playerId && edge.Road3()->PlayerId() == playerId)
+                {
+                    return true;
+                }
+            }                   
+        }
+    }
+    return false;
+}
 
+
+//  std::vector<std::pair<int, int>> towRoad = {
+//         {1, 2} ,{35, 36} ,{3,10} ,{6,14} ,{3,10} ,{23,31} ,{27,34},
+//         {1, 7} ,{1, 8} ,{2,8} ,{2,9} ,{3,11} ,{3,4} ,{4,11}, {4,12}, {4,5}, {5,12}, {5,13}, {5,6}, {6,13},
+//         {7, 15} ,{7, 16} ,{7,8} ,{8,16} ,{8,17} ,{8,9} ,{9,17}, {9,18},
+//         {10, 11} ,{10, 19} ,{11,19} ,{11,20} ,{11,12} ,{12,20} ,{12,21}, {12,13}, {13,21}, {13,22}, {13,14}, {14,22},
+//         {15, 23} ,{15, 24} ,{15,16} ,{16,24} ,{16,25} ,{16,17} ,{17,25}, {17,26}, {17,18}, {18,26}, {18,27},
+//         {19, 28} ,{19, 20} ,{20,28} ,{20, 29} ,{20, 21} ,{21,29} ,{21, 30} ,{21, 22} ,{22,30},
+//         {23, 24} ,{24, 31} ,{24,32} ,{24,25} ,{25,32} ,{25,33} ,{25,26}, {26,33}, {26,34}, {18,26}, {18,27},
+//     };

@@ -118,18 +118,16 @@ int main() {
     while (catan.printWinner()) {
         for (auto& player : catan.getPlayers()) {
             player->setTurn();
-            std::cout << player->getName() << "torn: " << std::endl;
+            std::cout << player->getName() << " torn:" << std::endl;
+            std::cout << player->getName() << " insret a commend: (use or roll)" << std::endl;
             std::cin >> cmd;
 
             if (cmd == "use development" || cmd == "use card" || cmd == "use") {
                 player->useDevelopmentCard(catan,board);
             }
 
-            else {
-                player->rollDice(catan,board);
-            }
-
-            std::cin >> cmd;
+            player->rollDice(catan,board);
+            
             while (cmd != "end") {
                 if (cmd == "road")
                 {
@@ -198,6 +196,12 @@ int main() {
                 {
                     board.settlementGuide();
                 }
+                if (cmd == "commend")
+                {
+                    commend_guide();
+                }
+                std::cout << player->getName() << " insert the command to continue or 'end' to stop" << std::endl;
+                std::cout << " if you don't remember the comments insert 'commend' " << std::endl;
                 std::cin >> cmd;
             }        
         }
